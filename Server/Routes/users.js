@@ -8,6 +8,7 @@ router.post('/login', userController.login);
 router.post('/change-password', checkAuth, userController.changePassword);
 router.get('/profile', checkAuth, userController.userProfile);
 router.put('/profile', checkAuth, userController.userProfileEdit);
+router.get('/mutual', checkAuth, userController.mutualHobbies);
 
 module.exports = router;
 
