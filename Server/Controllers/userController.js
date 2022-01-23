@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
 
 const jwt_token = process.env.TOKEN_SECRET;
+let userHobbies;
 
 const register = async (req, res) => {
   const { email, password: plainTextPassword, firstname, surname } = req.body;
@@ -122,15 +123,42 @@ const userProfileEdit = async (req, res) => {
         year: year,
         bio: bio
       },
-      $addToSet: {hobbies: hobbies}},
+        $addToSet: {hobbies: hobbies}
+      },
       {upsert: true}
     );
+    userHobbies = new Array(hobbies);
+
   } catch (error) {
     console.log(error);
-    return res.json({status: 'error', error: 'Error updating user'});
+    return res.json({status: 'error', error: 'Error updating users details'});
   }
 
   res.json({status: 'ok', message: 'User updated'});
+}
+
+const mutualHobbies = async (req, res) => {
+  const userID = req.user.id;
+  // const user = await User.findOne({userID}).lean();
+  // const user = await User.find(
+  //   {hobbies: {$in: ["skiing", "Problem-Solving"]} },
+  //   {_id: 1, firstname: 1, surname: 1, hobbies: 1}
+  // );
+
+  const user = await User.find(
+    {hobbies: {$in: userHobbies} },
+    {_id: 1, firstname: 1, surname: 1, hobbies: 1}
+  ).lean();
+
+  console.log(userHobbies);
+
+  // const mutualUsers = await User.find({
+  //   $or: [
+  //     { hobbies: {} }
+  //   ]
+  // });
+
+  res.json({mutualUsers:user});
 }
 
 module.exports = {
@@ -138,5 +166,6 @@ module.exports = {
   login,
   changePassword,
   userProfile,
-  userProfileEdit
+  userProfileEdit,
+  mutualHobbies
 }
