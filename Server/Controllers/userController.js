@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
 
 const jwt_token = process.env.TOKEN_SECRET;
-let userHobbies;
 
 const register = async (req, res) => {
   const { email, password: plainTextPassword, firstname, surname } = req.body;
@@ -35,7 +34,7 @@ const register = async (req, res) => {
       surname,
       bio
     })
-    console.log('User created successfully');
+    console.log('User created successfully.');
     
   } catch (error) {
     if(error.code === 11000) {
@@ -65,7 +64,14 @@ const login = async (req, res) => {
       email: user.email
     }, jwt_token);
 
-    return res.json({status: 'ok', data: token});
+    console.log(`${user.firstname} has logged in.`);
+
+    return res.json({status: 'ok', user: {
+      name: user.firstname,
+      surname: user.surname,
+      hobbies: user.hobbies,
+      token: token
+    }});
   }
   
   res.json({status: 'error', error: 'Invalid username/password'});
@@ -124,11 +130,7 @@ const userProfileEdit = async (req, res) => {
         bio: bio
       },
         $addToSet: {hobbies: hobbies}
-      },
-      {upsert: true}
-    );
-    userHobbies = new Array(hobbies);
-
+      },{upsert: true});
   } catch (error) {
     console.log(error);
     return res.json({status: 'error', error: 'Error updating users details'});
@@ -139,26 +141,39 @@ const userProfileEdit = async (req, res) => {
 
 const mutualHobbies = async (req, res) => {
   const userID = req.user.id;
-  // const user = await User.findOne({userID}).lean();
-  // const user = await User.find(
-  //   {hobbies: {$in: ["skiing", "Problem-Solving"]} },
-  //   {_id: 1, firstname: 1, surname: 1, hobbies: 1}
-  // );
 
-  const user = await User.find(
-    {hobbies: {$in: userHobbies} },
+  //current logged in user
+  const user = await User.findOne(
+    {_id: userID},
     {_id: 1, firstname: 1, surname: 1, hobbies: 1}
   ).lean();
 
-  console.log(userHobbies);
+  const userHobbies = user.hobbies;
+  const userObj = []
 
-  // const mutualUsers = await User.find({
-  //   $or: [
-  //     { hobbies: {} }
-  //   ]
-  // });
+  // Users with shared hobbies as current logged in user
+  const mutualUsers = await User.find(
+    {_id: {$ne: userID}, hobbies: {$in: userHobbies} },
+    {_id: 1, firstname: 1, surname: 1, hobbies: 1}
+  ).lean();
 
-  res.json({mutualUsers:user});
+  mutualUsers.forEach(user => {
+    let hobbies = []
+    user.hobbies.forEach(hobby => {
+      if(userHobbies.includes(hobby)) {
+        hobbies.push(hobby);
+      }
+    })
+    userObj.push({"_id": user._id, "name": user.firstname, "hobbies": hobbies});
+  })
+
+  userObj.sort((first, next) => {
+    return next.hobbies.length - first.hobbies.length;
+  });
+
+  console.log(userObj);
+
+  res.json({status: 'ok', users: userObj});
 }
 
 module.exports = {
