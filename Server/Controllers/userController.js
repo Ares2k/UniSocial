@@ -4,18 +4,29 @@ const User = require('../Models/user');
 
 const jwt_token = process.env.TOKEN_SECRET;
 
+const validateEmail = (email) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+}
+
+const validatePassword = (password) => {
+  return String(password)
+    .match(
+      /^[A-Za-z]\w{6,20}$/
+    );
+}
+
 const register = async (req, res) => {
   const { email, password: plainTextPassword, firstname, surname } = req.body;
 
-  //TODO: Implement additional checks for input fields
-  // if(!username || typeof username !== 'string') 
-  //   return res.json({status: 'error', error: 'Invalid Username'});
-  
-  if(!email || typeof email !== 'string')
+  if(!email || typeof email !== 'string' || !validateEmail(email))
     return res.json({status: 'error', error: 'Invalid Email'});
 
-  if(!plainTextPassword || typeof plainTextPassword !== 'string')
-    return res.json({status: 'error', error: 'Invalid Password'});
+  if(!plainTextPassword || typeof plainTextPassword !== 'string' || !validatePassword(plainTextPassword))
+    return res.json({status: 'Invalid Password', error: 'Must contain characters with length > 6'});
 
   if(!firstname || typeof firstname !== 'string')
     return res.json({status: 'error', error: 'Invalid First Name'});
@@ -24,15 +35,13 @@ const register = async (req, res) => {
     return res.json({status: 'error', error: 'Invalid Surname'});
 
   const password = await bcrypt.hash(plainTextPassword, 10);
-  const bio = 'No information given.';
 
   try {
     await User.create({
       email,
       password,
       firstname,
-      surname,
-      bio
+      surname
     })
     console.log('User created successfully.');
     
@@ -73,17 +82,21 @@ const login = async (req, res) => {
       token: token
     }});
   }
-  
+
   res.json({status: 'error', error: 'Invalid username/password'});
 }
 
 const changePassword = async (req, res) => {
   const { newPassword } = req.body;
 
-  try {
-    const _id = req.user.id;
-    const password = await bcrypt.hash(newPassword, 10);
+  if(!newPassword || typeof newPassword !== 'string' || !validatePassword(newPassword)) {
+    return res.json({status: 'Invalid Password', error: 'Must contain characters with length > 6'});
+  }
 
+  const _id = req.user.id;
+  const password = await bcrypt.hash(newPassword, 10);
+
+  try {
     await User.updateOne({_id}, {$set: { password }});
 
     res.json({status: 'ok', message: 'Password Changed Successfully'});
@@ -112,12 +125,11 @@ const userProfile = async (req, res) => {
     console.log(error);
     return res.json({status: 'error', error: error});
   }
-  
 }
 
-const userProfileEdit = async (req, res) => {
-  const { firstname, surname, course, year, bio, hobbies } = req.body;
-  const userID = req.user.id;
+const editUserProfile = async (req, res) => {
+  const { firstname, surname, course, bio, hobbies } = req.body;
+  const userID = req.user.id; 
 
   try {
     await User.updateOne(
@@ -125,12 +137,14 @@ const userProfileEdit = async (req, res) => {
       {$set: {
         firstname: firstname,
         surname: surname,
-        course: course,
-        year: year,
-        bio: bio
-      },
-        $addToSet: {hobbies: hobbies}
-      },{upsert: true});
+        course: {
+          code: course.code,
+          name: course.name,
+          year: course.year
+        },
+        bio: bio,
+        hobbies: hobbies
+      }},{upsert: true});
   } catch (error) {
     console.log(error);
     return res.json({status: 'error', error: 'Error updating users details'});
@@ -139,26 +153,24 @@ const userProfileEdit = async (req, res) => {
   res.json({status: 'ok', message: 'User updated'});
 }
 
-const mutualHobbies = async (req, res) => {
+const mutualUsers = async (req, res) => {
   const userID = req.user.id;
 
-  //current logged in user
   const user = await User.findOne(
     {_id: userID},
     {_id: 1, firstname: 1, surname: 1, hobbies: 1}
   ).lean();
 
   const userHobbies = user.hobbies;
-  const userObj = []
+  const userObj = [];
 
-  // Users with shared hobbies as current logged in user
   const mutualUsers = await User.find(
     {_id: {$ne: userID}, hobbies: {$in: userHobbies} },
     {_id: 1, firstname: 1, surname: 1, hobbies: 1}
   ).lean();
 
   mutualUsers.forEach(user => {
-    let hobbies = []
+    let hobbies = [];
     user.hobbies.forEach(hobby => {
       if(userHobbies.includes(hobby)) {
         hobbies.push(hobby);
@@ -171,9 +183,15 @@ const mutualHobbies = async (req, res) => {
     return next.hobbies.length - first.hobbies.length;
   });
 
-  console.log(userObj);
+  res.json({status: 'ok', users: userObj});     
+}
 
-  res.json({status: 'ok', users: userObj});
+const mutualUser = async (req, res) => {
+  const user = await User.findOne({firstname: req.params.id});
+
+  if(!user) return res.json({status: 'error', error: 'User not found'});
+
+  res.json({status: 'ok', user: user});
 }
 
 module.exports = {
@@ -181,6 +199,7 @@ module.exports = {
   login,
   changePassword,
   userProfile,
-  userProfileEdit,
-  mutualHobbies
+  editUserProfile,
+  mutualUsers,
+  mutualUser
 }
