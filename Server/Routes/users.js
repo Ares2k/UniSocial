@@ -4,11 +4,13 @@ const userController = require('../Controllers/userController');
 const checkAuth = require('../Middleware/authentication');
 
 router.post('/register', userController.register);
-router.post('/login', userController.login);
-router.post('/change-password', checkAuth, userController.changePassword);
-router.get('/profile', checkAuth, userController.userProfile);
-router.put('/profile', checkAuth, userController.userProfileEdit);
-router.get('/mutual', checkAuth, userController.mutualHobbies);
+router.post('/login'   , userController.login);
+
+router.post('/change-password' , checkAuth, userController.changePassword);
+router.get('/profile'          , checkAuth, userController.userProfile);
+router.put('/profile'          , checkAuth, userController.editUserProfile);
+router.get('/mutual/'          , checkAuth, userController.mutualUsers);
+router.get('/mutual/:id'       , checkAuth, userController.mutualUser)
 
 module.exports = router;
 
