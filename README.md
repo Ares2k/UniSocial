@@ -1,2 +1,2 @@
 # UniSocial
-A social web application which helps university students connect via common interests/hobbies and features an integrated chat.
+A social web application which helps university students connect via mutual interests/hobbies and features an integrated chat.
