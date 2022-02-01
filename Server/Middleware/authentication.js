@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     const user = jwt.verify(token, process.env.TOKEN_SECRET);
     req.user = user;
     next();
-  } catch (error) {
+  } catch (err) {
     res.json({status: 'error', error: 'JWT auth failed, check token'});
   }
 }
