@@ -1,82 +1,60 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
+const addUser = require('../Services/addUser');
+const { validateInput, validatePassword } = require('../Services/validate');
 
 const jwt_token = process.env.TOKEN_SECRET;
 
-const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-}
-
-const validatePassword = (password) => {
-  return String(password)
-    .match(
-      /^[A-Za-z]\w{6,20}$/
-    );
-}
-
 const register = async (req, res) => {
-  const { email, password: plainTextPassword, firstname, surname } = req.body;
-
-  if(!email || typeof email !== 'string' || !validateEmail(email))
-    return res.json({status: 'error', error: 'Invalid Email'});
-
-  if(!plainTextPassword || typeof plainTextPassword !== 'string' || !validatePassword(plainTextPassword))
-    return res.json({status: 'Invalid Password', error: 'Must contain characters with length > 6'});
-
-  if(!firstname || typeof firstname !== 'string')
-    return res.json({status: 'error', error: 'Invalid First Name'});
-  
-  if(!surname || typeof surname !== 'string')
-    return res.json({status: 'error', error: 'Invalid Surname'});
-
-  const password = await bcrypt.hash(plainTextPassword, 10);
+  const { username, email, firstname, surname, password: plainTextPassword } = req.body;
 
   try {
-    await User.create({
-      email,
-      password,
-      firstname,
-      surname
-    })
-    console.log('User created successfully.');
-    
-  } catch (error) {
-    if(error.code === 11000) {
-      return res.json({status: 'error', error: 'Email is already in use'});
-    }
-    throw error;
+    validateInput(req.body);
+  } catch (err) {
+    if(err === 101) return res.json({status: 'Invalid username', error: 'Username must be 5-20 chars in length'});
+    if(err === 102) return res.json({status: 'error', error: 'Invalid email'});
+    if(err === 103) return res.json({status: 'error', error: 'Invalid First Name'});
+    if(err === 104) return res.json({status: 'error', error: 'Invalid Surname'});
+    if(err === 105) return res.json({status: 'Invalid password', error: 'Must contain characters with length > 4'});
+  }
+
+  const password = await bcrypt.hash(plainTextPassword, 10);
+  const userDetails = {username, email, firstname, surname, password};
+
+  try {
+    await addUser(userDetails);  
+  } catch (err) {
+    if(err === 11000) return res.json({status: 'error', error: 'Email or username is already in use'});
   }
 
   res.json({
     status: 'ok',
     message: {
-      firstname: firstname,
-      surname: surname,
+      username: username,
       email: email,
+      firstname: firstname,
+      surname: surname
     }});
 }
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({email}).lean();
+  const { username, password } = req.body;
+  const user = await User.findOne({username}).lean();
 
   if(!user) return res.json({status: 'error', error: 'Invalid username/password'});
 
   if(await bcrypt.compare(password, user.password)) {
     const token = jwt.sign({
       id: user._id,
-      email: user.email
+      username: user.username
     }, jwt_token);
 
-    console.log(`${user.firstname} has logged in.`);
+    console.log(`${user.username} has logged in.`);
 
     return res.json({status: 'ok', user: {
-      name: user.firstname,
+      username: user.username,
+      firstname: user.firstname,
       surname: user.surname,
       hobbies: user.hobbies,
       token: token
@@ -89,9 +67,7 @@ const login = async (req, res) => {
 const changePassword = async (req, res) => {
   const { newPassword } = req.body;
 
-  if(!newPassword || typeof newPassword !== 'string' || !validatePassword(newPassword)) {
-    return res.json({status: 'Invalid Password', error: 'Must contain characters with length > 6'});
-  }
+  if(!validatePassword(newPassword)) return res.json({status: 'Invalid Password', error: 'Must contain characters with length > 6'});
 
   const _id = req.user.id;
   const password = await bcrypt.hash(newPassword, 10);
@@ -101,8 +77,8 @@ const changePassword = async (req, res) => {
 
     res.json({status: 'ok', message: 'Password Changed Successfully'});
 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
     return res.json({status: 'error', error: 'Invalid JWT Token'});
   }
 }
@@ -121,9 +97,8 @@ const userProfile = async (req, res) => {
       bio: user.bio,
       hobbies: user.hobbies
     }});
-  } catch (error) {
-    console.log(error);
-    return res.json({status: 'error', error: error});
+  } catch (err) {
+    return res.json({status: 'error', error: err});
   }
 }
 
@@ -145,8 +120,8 @@ const editUserProfile = async (req, res) => {
         bio: bio,
         hobbies: hobbies
       }},{upsert: true});
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
     return res.json({status: 'error', error: 'Error updating users details'});
   }
 
@@ -187,7 +162,7 @@ const mutualUsers = async (req, res) => {
 }
 
 const mutualUser = async (req, res) => {
-  const user = await User.findOne({firstname: req.params.id});
+  const user = await User.findOne({username: req.params.id}).lean();
 
   if(!user) return res.json({status: 'error', error: 'User not found'});
 
