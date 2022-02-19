@@ -29,6 +29,4 @@ app.use((err, req, res, next) => {
     message: 'Route does not exist'});
 });
 
-app.listen(port, () => {
-  // console.log(`App running on: http://localhost:${port}`);
-});
+app.listen(port);
