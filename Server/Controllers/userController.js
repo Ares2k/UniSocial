@@ -5,6 +5,9 @@ const addUser = require('../Services/addUser');
 const { validateInput, validatePassword } = require('../Services/validate');
 
 const jwt_token = process.env.TOKEN_SECRET;
+const jwt_refresh_token = process.env.REFRESH_TOKEN;
+
+let refreshTokens = []
 
 const register = async (req, res) => {
   const { username, email, firstname, surname, password: plainTextPassword } = req.body;
@@ -13,10 +16,11 @@ const register = async (req, res) => {
     validateInput(req.body);
   } catch (err) {
     if(err === 101) return res.json({status: 'Invalid username', error: 'Username must be 5-20 chars in length'});
-    if(err === 102) return res.json({status: 'error', error: 'Invalid email'});
-    if(err === 103) return res.json({status: 'error', error: 'Invalid First Name'});
-    if(err === 104) return res.json({status: 'error', error: 'Invalid Surname'});
+    if(err === 102) return res.json({status: 'error'           , error: 'Invalid email'});
+    if(err === 103) return res.json({status: 'error'           , error: 'Invalid First Name'});
+    if(err === 104) return res.json({status: 'error'           , error: 'Invalid Surname'});
     if(err === 105) return res.json({status: 'Invalid password', error: 'Must contain characters with length > 4'});
+    if(err === 106) return res.json({status: 'error'           , error: 'Passwords dont match'});
   }
 
   const password = await bcrypt.hash(plainTextPassword, 10);
@@ -28,40 +32,60 @@ const register = async (req, res) => {
     if(err === 11000) return res.json({status: 'error', error: 'Email or username is already in use'});
   }
 
-  res.json({
-    status: 'ok',
-    message: {
-      username: username,
-      email: email,
-      firstname: firstname,
-      surname: surname
-    }});
+  res.json({status: 'ok', message: 'Account created Successfully'});
 }
 
 const login = async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({username}).lean();
 
-  if(!user) return res.json({status: 'error', error: 'Invalid username/password'});
+  if(!user) return res.json({status: 401, error: 'Invalid username/password'});
 
   if(await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({
-      id: user._id,
-      username: user.username
-    }, jwt_token);
+    const userDetails = { id: user._id, username: user.username };
+
+    const accessToken = jwt.sign(userDetails, jwt_token, { expiresIn: '15m' });
+    const refreshToken = jwt.sign(userDetails, jwt_refresh_token);
+
+    refreshTokens.push(refreshToken);
 
     console.log(`${user.username} has logged in.`);
 
-    return res.json({status: 'ok', user: {
-      username: user.username,
-      firstname: user.firstname,
-      surname: user.surname,
-      hobbies: user.hobbies,
-      token: token
-    }});
+    // return res.status(200).json({accessToken});
+    return res.json({ status: 200, token: accessToken });
   }
 
-  res.json({status: 'error', error: 'Invalid username/password'});
+  res.json({ status: 401, error: 'Invalid username/password' });
+}
+
+const logout = (req, res) => { 
+  const refreshToken = req.body.token;
+  refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+  res.json({status: 200, message: 'Successfully logged out.'});
+}
+
+const generateNewToken = (req, res) => {
+  //This can go to authentication middleware
+  //Same as other auth, just different secret key
+  const refreshToken = req.body.token;
+
+  if(!refreshToken) return res.json({status: 'error', message: 'Not authenticated'});
+  if(!refreshTokens.includes(refreshToken)) return res.json({status: 'error', message: 'Refresh token is not valid'});
+
+  jwt.verify(refreshToken, jwt_refresh_token, (err, user) => {
+    err && console.log(err);
+    refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
+
+    const newToken = jwt.sign(user, jwt_token, { expiresIn: '10m' });
+    const newRefreshToken = jwt.sign(user, jwt_refresh_token);
+
+    refreshTokens.push(newRefreshToken);
+
+    res.json({status: 200, message: {
+      'token': newToken,
+      'refreshToken': newRefreshToken
+    }})
+  });
 }
 
 const changePassword = async (req, res) => {
@@ -89,6 +113,7 @@ const userProfile = async (req, res) => {
 
   try {
     res.json({status: 'ok', message: {
+      username: user.username,
       firstname: user.firstname,
       surname: user.surname,
       email: user.email,
@@ -133,7 +158,7 @@ const mutualUsers = async (req, res) => {
 
   const user = await User.findOne(
     {_id: userID},
-    {_id: 1, firstname: 1, surname: 1, hobbies: 1}
+    {_id: 1, username: 1, firstname: 1, surname: 1, bio: 1, course: 1, hobbies: 1}
   ).lean();
 
   const userHobbies = user.hobbies;
@@ -141,7 +166,7 @@ const mutualUsers = async (req, res) => {
 
   const mutualUsers = await User.find(
     {_id: {$ne: userID}, hobbies: {$in: userHobbies} },
-    {_id: 1, firstname: 1, surname: 1, hobbies: 1}
+    {_id: 1, username: 1, firstname: 1, surname: 1, bio: 1, course: 1, hobbies: 1}
   ).lean();
 
   mutualUsers.forEach(user => {
@@ -151,18 +176,28 @@ const mutualUsers = async (req, res) => {
         hobbies.push(hobby);
       }
     })
-    userObj.push({"_id": user._id, "name": user.firstname, "hobbies": hobbies});
+    userObj.push({
+      "_id": user._id,
+      "username": user.username,
+      "firstname": user.firstname,
+      "surname": user.surname,
+      "bio": user.bio,
+      "hobbies": hobbies});
   })
 
   userObj.sort((first, next) => {
     return next.hobbies.length - first.hobbies.length;
   });
 
-  res.json({status: 'ok', users: userObj});     
+  // res.status(200).json({users: userObj});
+  res.json({ status: 200, users: userObj });     
 }
 
 const mutualUser = async (req, res) => {
-  const user = await User.findOne({username: req.params.id}).lean();
+  const user = await User.findOne(
+    {username: req.params.id},
+    {username: 1, email: 1, firstname: 1, surname: 1, hobbies: 1, bio: 1, course: 1}
+  ).lean();
 
   if(!user) return res.json({status: 'error', error: 'User not found'});
 
@@ -172,6 +207,8 @@ const mutualUser = async (req, res) => {
 module.exports = {
   register,
   login,
+  logout,
+  generateNewToken,
   changePassword,
   userProfile,
   editUserProfile,
