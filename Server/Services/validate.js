@@ -21,14 +21,14 @@ const validatePassword = (password) => {
 }
 
 const validateInput = (body) => {
-  const { username, email, firstname, surname, password } = body;
-  console.log(body);
+  const { username, email, firstname, surname, password, confirmPass } = body;
   
-  if(!username  || typeof username  !== 'string' || !validateUsername(username)) throw 101;
-  if(!email     || typeof email     !== 'string' || !validateEmail(email)) throw 102;
-  if(!firstname || typeof firstname !== 'string') throw 103;
-  if(!surname   || typeof surname   !== 'string') throw 104;
-  if(!password  || typeof password  !== 'string' || !validatePassword(password)) throw 105;
+  if(!username        || typeof username        !== 'string' || !validateUsername(username)) throw 101;
+  if(!email           || typeof email           !== 'string' || !validateEmail(email)) throw 102;
+  if(!firstname       || typeof firstname       !== 'string') throw 103;
+  if(!surname         || typeof surname         !== 'string') throw 104;
+  if(!password        || typeof password        !== 'string' || !validatePassword(password)) throw 105;
+  if(password !== confirmPass) throw 106;
 }
 
 module.exports = {
