@@ -5,12 +5,14 @@ const checkAuth = require('../Middleware/authentication');
 
 router.post('/register', userController.register);
 router.post('/login'   , userController.login);
-
+router.post('/token'   , userController.generateNewToken);
+router.post('/logout'          , checkAuth, userController.logout);
 router.post('/change-password' , checkAuth, userController.changePassword);
 router.get('/profile'          , checkAuth, userController.userProfile);
 router.put('/profile'          , checkAuth, userController.editUserProfile);
 router.get('/mutual/'          , checkAuth, userController.mutualUsers);
 router.get('/mutual/:id'       , checkAuth, userController.mutualUser)
+//TODO: Add a delete profile endpoint
 
 module.exports = router;
 
