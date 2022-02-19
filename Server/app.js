@@ -15,7 +15,7 @@ mongoose.connect(db_url)
 app.use(cors());
 app.use(express.json());
 
-app.use('/users', userRouter);
+app.use('/api', userRouter);
 
 app.use((req, res, next) => {
   res.json({
