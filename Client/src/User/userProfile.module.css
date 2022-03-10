@@ -1,0 +1,65 @@
+.profileCard {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  width: 30%;
+  margin: 30px auto;
+  border-radius: 3px;
+  box-shadow: 0px 0px 19px 5px rgba(0, 0, 0, 0.19);
+  background-color: #e9ecef;
+}
+
+.profileCard textarea {
+  width: 60%;
+  height: 10vh;
+  padding: 5px 10px;
+}
+
+input {
+  margin: 0px 0;
+  width: 60%;
+  padding: 5px 10px;
+  outline: none;
+}
+
+.username {
+  background-color: white;
+  color: gray;
+}
+
+.courseDetails {
+  width: 60%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.courseDetails input {
+  margin: 20px 0;
+  width: 80%;
+}
+
+.courseDetails select {
+  width: 12%;
+  text-align: center;
+}
+
+label {
+  margin-top: 30px;
+}
+
+.buttons {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 60%;
+  margin: 20px;
+}
+
+.buttons > :first-child {
+  width: 40%;
+}
