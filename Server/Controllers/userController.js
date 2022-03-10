@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
+const Hobbies = require('../Models/hobbies');
+const HobbyCounter = require('../Models/hobbyCounter');
 const addUser = require('../Services/addUser');
 const { validateInput, validatePassword } = require('../Services/validate');
 
@@ -44,7 +46,8 @@ const login = async (req, res) => {
   if(await bcrypt.compare(password, user.password)) {
     const userDetails = { id: user._id, username: user.username };
 
-    const accessToken = jwt.sign(userDetails, jwt_token, { expiresIn: '15m' });
+    // const accessToken = jwt.sign(userDetails, jwt_token, { expiresIn: '15m' });
+    const accessToken = jwt.sign(userDetails, jwt_token);
     const refreshToken = jwt.sign(userDetails, jwt_refresh_token);
 
     refreshTokens.push(refreshToken);
@@ -107,12 +110,12 @@ const changePassword = async (req, res) => {
   }
 }
 
-const userProfile = async (req, res) => {
+const getProfile = async (req, res) => {
   const _id = req.user.id;
   const user = await User.findOne({_id}).lean();
 
   try {
-    res.json({status: 'ok', message: {
+    res.json({status: 200, user: {
       username: user.username,
       firstname: user.firstname,
       surname: user.surname,
@@ -127,10 +130,11 @@ const userProfile = async (req, res) => {
   }
 }
 
-const editUserProfile = async (req, res) => {
-  const { firstname, surname, course, bio, hobbies } = req.body;
+const updateProfile = async (req, res) => {
+  const { firstname, surname, course, bio, hobbies } = req.body.profile;
   const userID = req.user.id; 
-
+  
+  console.log(firstname, surname, course, bio, hobbies);
   try {
     await User.updateOne(
       {_id: userID},
@@ -150,7 +154,7 @@ const editUserProfile = async (req, res) => {
     return res.json({status: 'error', error: 'Error updating users details'});
   }
 
-  res.json({status: 'ok', message: 'User updated'});
+  res.json({status: 200, message: 'User updated'});
 }
 
 const mutualUsers = async (req, res) => {
@@ -199,9 +203,14 @@ const mutualUser = async (req, res) => {
     {username: 1, email: 1, firstname: 1, surname: 1, hobbies: 1, bio: 1, course: 1}
   ).lean();
 
-  if(!user) return res.json({status: 'error', error: 'User not found'});
+  if(!user) return res.json({status: 404, message: 'User not found'});
 
-  res.json({status: 'ok', user: user});
+  res.json({status: 200, user: user});
+}
+
+const getHobbies = async (req, res) => {
+  const hobbies = await Hobbies.find({}, {});
+  res.json({status: 200, hobbies});
 }
 
 module.exports = {
@@ -210,8 +219,9 @@ module.exports = {
   logout,
   generateNewToken,
   changePassword,
-  userProfile,
-  editUserProfile,
+  getProfile,
+  updateProfile,
   mutualUsers,
-  mutualUser
+  mutualUser,
+  getHobbies
 }
