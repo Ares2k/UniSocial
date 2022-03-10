@@ -24,10 +24,6 @@ const UserProfile = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  }
-
   const updateProfile = async () => {
     const token = localStorage.getItem('token');
     const response = await fetch('http://localhost:5000/api/profile', {
