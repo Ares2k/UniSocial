@@ -1,7 +1,5 @@
 *, *::after, *::before {
   box-sizing: border-box;
-  /* margin: 0;
-  padding: 0; */
 }
 
 * {
@@ -39,7 +37,7 @@ body {
 }
 
 /* Box that contains image and input fields */
-.registration-box {
+.registrationBox {
   max-width: 1200px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -49,7 +47,7 @@ body {
   background-color: #e9ecef;
 }
 
-img {
+.img {
   /* height: 100%; */
   height: auto;
   width: 100%;
@@ -65,7 +63,7 @@ img {
   box-shadow: 0px 0px 19px 5px rgba(0, 0, 0, 0.19);
 }
 
-p::after {
+.p::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -77,7 +75,7 @@ p::after {
   background-color: #2ecc71;
 }
 
-p {
+.p {
   position: relative;
   padding-bottom: 15px;
   margin-bottom: 20px;
@@ -118,7 +116,7 @@ p {
 }
 
 @media screen and (max-width: 880px) {
-  .registration-box {
+  .registrationBox {
     grid-template-columns: 1fr;
   }
 
@@ -134,7 +132,7 @@ p {
 }
 
 @media screen and (max-width: 600px) {
-  .registration-box {
+  .registrationBox {
     grid-template-columns: 1fr;
   }
 
@@ -148,7 +146,7 @@ p {
 }
 
 @media screen and (max-width: 460px) {
-  .registration-box {
+  .registrationBox {
     grid-template-columns: 1fr;
   }
 
@@ -160,13 +158,13 @@ p {
     padding: 20px 40px; /* Padding that corresponds to edges of the screen */
   }
 
-  h1 {
+  .h1 {
     font-size: 1.8em;
   }
 }
 
 @media screen and (max-width: 431px) {
-  .registration-box {
+  .registrationBox {
     grid-template-columns: 1fr;
   }
 
@@ -180,7 +178,7 @@ p {
     padding: 0px 0px; /* Padding that corresponds to edges of the screen */
   }
 
-  h1 {
+  .h1 {
     font-size: 1.6em;
   }
 }
