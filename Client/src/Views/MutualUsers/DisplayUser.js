@@ -15,12 +15,12 @@ const DisplayUser = () => {
       navigate('/login');
     }
 
-    fetch(`http://localhost:5000/api/mutual/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
-    }
+    fetch(`http://192.168.0.74:5000/api/mutual/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
     })
     .then(res => res.json())
     .then(res => {
