@@ -8,7 +8,6 @@ const UserProfile = () => {
   const [error, setError] = useState(false);
   const [empty, setEmpty] = useState(false);
   const [hobbyPopup, setHobbyPopup] = useState(false);
-  // const [chosenHobbies, setChosenHobbies] = useState([]);
   const [profile, setProfile] = useState({
     username: '',
     firstname: '',
@@ -23,10 +22,11 @@ const UserProfile = () => {
   });
 
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
 
   const updateProfile = async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/profile', {
+    const response = await fetch('http://192.168.0.74:5000/api/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,60 +71,51 @@ const UserProfile = () => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if(!token) {
       console.log('No JWT token found. Please login again.');
       navigate('/login');
     }
 
-    async function fetchProfile() {
-      try {
-        const response = await fetch('http://localhost:5000/api/profile', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-          }});
-
-        const userProfile = await response.json();
-
-        // Destructure data from response object
-        const {
-          username,
-          firstname,
-          surname,
-          email,
-          course: { code, name, year },
-          hobbies,
-          bio 
-        } = userProfile.user;
+    fetch('http://192.168.0.74:5000/api/profile', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      if(res.status === 200) {
+        const user = res.user;
+        const course = res.user.course;
+        const hobbies = res.user.hobbies;
 
         // Construct profile object
         const profileObj = {
-          username,
-          firstname,
-          surname,
-          email,
+          username: user.username,
+          firstname: user.firstname,
+          surname: user.surname,
+          email: user.email,
           course: {
-            code,
-            name,
-            year
+            code: course.code,
+            name: course.name,
+            year: course.name
           },
           hobbies,
-          bio
+          bio: user.bio
         };
 
         setProfile(profileObj);
-        // setChosenHobbies(hobbies);
         setError(false);
-      } catch (error) {
-        setError(error);
       }
-    }
-    fetchProfile();
+    })
+    .catch(err => {
+      console.log(err);
+    });
   }, [navigate])
 
-  return (
+  // Only render the page if a valid token exists
+  return token ? (
     <div className={style.profileCard}>
       <label>Username</label>
       <input
@@ -239,7 +230,7 @@ const UserProfile = () => {
       { error && <h2>{error}</h2> }
       { empty && <h2>Cannot be empty</h2> }
     </div>
-  );
+  ) : '';
 }
  
 export default UserProfile;
