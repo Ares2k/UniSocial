@@ -10,14 +10,14 @@ const Login = () => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
   
-    let response = await fetch('http://localhost:5000/api/login', {
+    let response = await fetch('http://192.168.0.74:5000/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'username': username,
-        'password': password
+        username,
+        password
       })
     });
   
@@ -27,7 +27,7 @@ const Login = () => {
       console.log(response);
     } else {
       localStorage.setItem('token', response.token);
-      navigate('/users/mutual');
+      navigate('/users/mutual', {replace: true});
     }
   }
 
