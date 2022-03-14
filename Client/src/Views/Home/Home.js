@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import getStartedImg from '../../Assets/Images/get-started.svg';
 import networkingImg from '../../Assets/Images/students-networking.svg';
+import peopleTalkingImg from '../../Assets/Images/people-talking.svg';
 import Button from '../../Components/Button/Button';
 import style from './home.module.css';
+import waveImg from '../../Assets/Images/wave-small.svg';
 
 const Home = () => {
   const token = localStorage.getItem('token');
@@ -17,9 +19,12 @@ const Home = () => {
             className={style.getStartedImg}
             alt=""
           />
-          <div className={style.getStartedContainer}>
+          <div className={style.infoContainer}>
             <h1>Get started with UniSocial</h1>
-            <h3>Meet other like-minded individuals on our student oriented platform and start connecting today.</h3>
+            <h3>
+              Meet other like-minded individuals on our student oriented platform and start connecting today.
+              Create an account now to get started.
+            </h3>
             <Button
               label={ token ? "Meet Students »" : "Create an Account »" }
               className={ style.button }
@@ -27,14 +32,15 @@ const Home = () => {
             />
           </div>
         </div>
+        
+        <img src={waveImg} alt="" className={style.waves} />
 
-        <div className={style.itemWrapper}>
-          <div className={style.getStartedContainer}>
+        <div className={`${style.itemWrapper} ${style.secondInfoWrapper}`}>
+          <div className={style.infoContainer}>
             <h1 className={style.getStartedTxt}>Network with Students</h1>
             <h3>
               Customize your profile to suit your persona and choose your favourite hobbies that best
-              describe you. Other students with mutual hobbies will be matched with you allowing for a
-              mutual acquaintance.
+              describe you.
             </h3>
           </div>
           <img
@@ -42,6 +48,23 @@ const Home = () => {
             className={style.getStartedImg}
             alt=""
           />
+        </div>
+
+        <img src={waveImg} alt="" className={style.waves}/>
+
+        <div className={style.itemWrapper}>
+          <img
+            src={peopleTalkingImg}
+            className={`${style.getStartedImg} ${style.peopleTalking}`}
+            alt=""
+          />
+          <div className={style.infoContainer}>
+            <h1>User Preference Recommendations</h1>
+            <h3>
+              Only network with those that share your interests. Students with mutual hobbies will be
+              recommended allowing for a mutual acquaintance.
+            </h3>
+          </div>
         </div>
       </div>
     </>
