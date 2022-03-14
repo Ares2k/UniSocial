@@ -1,10 +1,4 @@
 import Button from "../../Components/Button/Button";
-// import './register.css';
-import { FaUserAlt } from 'react-icons/fa';
-import { FaUserCircle } from 'react-icons/fa';
-import { MdEmail } from 'react-icons/md';
-import { FaLock } from 'react-icons/fa';
-import phoneImg from '../../Assets/Images/unisocial-phone.svg';
 import phoneImgOrange from '../../Assets/Images/unisocial-phone-orange.svg';
 import style from './register.module.css';
 import { useNavigate } from "react-router-dom";
