@@ -22,7 +22,7 @@
 
 .inner .close {
   position: absolute;
-  top: 16px;
+  top: 12px;
   right: 16px;
   width: 20px;
   height: 20px;
@@ -96,6 +96,11 @@ input[type=checkbox] {
   .inner {
     width: 100%;
   }
+
+  .select {
+    width: 100%;
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 400px) {
@@ -103,9 +108,3 @@ input[type=checkbox] {
     width: 50%;
   }
 }
-
-/* @media (max-width: 680px) {
-  .inner {
-    height: 40vh;
-  }
-} */
