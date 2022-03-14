@@ -1,13 +1,17 @@
 import Button from '../Components/Button/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import style from './userProfile.module.css';
 import Popup from '../Components/Popup/Popup';
+import profileImg from '../Assets/Images/profiler.PNG';
+import { FiEdit } from 'react-icons/fi';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const UserProfile = () => {
   const [error, setError] = useState(false);
   const [empty, setEmpty] = useState(false);
   const [hobbyPopup, setHobbyPopup] = useState(false);
+  const [allowInput, setAllowInput] = useState(null);
   const [profile, setProfile] = useState({
     username: '',
     firstname: '',
@@ -23,6 +27,7 @@ const UserProfile = () => {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  let inputClass = allowInput ? style.enabled : style.disabled;
 
   const updateProfile = async () => {
     const token = localStorage.getItem('token');
@@ -35,10 +40,13 @@ const UserProfile = () => {
       body: JSON.stringify({
         profile
       })
-    });
+    })
+    .catch(err => {
+      console.log('Unable to update profile');
+    })
 
-    const updateStatus = await response.json();
-    console.log(updateStatus);
+    // const updateStatus = await response.json();
+    window.location.reload(true);
   }
 
   const handleChange = (e) => {
@@ -70,6 +78,8 @@ const UserProfile = () => {
     });  
   }
 
+  const editBtnClick = () => setAllowInput(!allowInput);
+
   useEffect(() => {
     if(!token) {
       console.log('No JWT token found. Please login again.');
@@ -99,7 +109,7 @@ const UserProfile = () => {
           course: {
             code: course.code,
             name: course.name,
-            year: course.name
+            year: course.year
           },
           hobbies,
           bio: user.bio
@@ -116,106 +126,168 @@ const UserProfile = () => {
 
   // Only render the page if a valid token exists
   return token ? (
-    <div className={style.profileCard}>
-      <label>Username</label>
-      <input
-        id='username'
-        className={style.username}
-        name='username'
-        value={ profile?.username }
-        disabled={true}
-      />
+    <div className={style.mainWrapper}>
+      {/* <img src={waveImg} alt=""/> */}
 
-      <label>First Name</label>
-      <input
-        id='firstname'
-        name='firstname'
-        value={ profile?.firstname }
-        placeholder='First name'
-        type='text'
-        autoComplete='off'
-        onChange={ handleChange }
-      />
+      <div className={style.profileCard}>
+        <div className={style.header}>
+          { allowInput ?
+            <FaCheckCircle
+              className={`${style.editIcon} ${style.headerWrapper}`}
+              onClick={editBtnClick}          
+            /> : <FiEdit
+              className={`${style.editIcon} ${style.headerWrapper}`}
+              onClick={editBtnClick}
+            />
+          }
+          <h1 className={style.headerWrapper}>Your Profile</h1>
+        </div>
 
-      <label>Surname</label>
-      <input
-        id='surname'
-        name='surname'
-        value={ profile?.surname }
-        placeholder='Surname'
-        type='text'
-        autoComplete='off'
-        onChange={ handleChange }
-      />
+        <div className={style.profileImageHolder}>
+          <img src={profileImg} alt="" className={style.profileImg} />
+          <Link
+            to="#"
+            style={{ color: "#df691a"}}
+            className={style.changePic}>
+            Click to change picture
+          </Link>
+        </div>
+        
+        <div className={style.signupDetails}>
+          <div className={style.field}>
+            <label>Username</label>
+            <input
+              id='username'
+              className={style.username}
+              name='username'
+              value={ profile?.username }
+              disabled={true}
+            />
+          </div>
 
-      <label>Email</label>
-      <input
-        id='email'
-        name='email'
-        value={ profile?.email }
-        placeholder='Email'
-        type='email'
-        autoComplete='off'
-        onChange={ handleChange }
-      />
+          <div className={style.field}>
+            <label>Email</label>
+            <input
+              id='email'
+              name='email'
+              value={profile?.email}
+              placeholder='Email'
+              type='email'
+              autoComplete='off'
+              onChange={handleChange}
+              className={style.disabled}
+              disabled={true}
+            />
+          </div>
+        </div>
 
-      <label>Course Name</label>
-      <input
-        id='courseName'
-        name='name'
-        value={profile?.course?.name}
-        placeholder='Course Name'
-        type='text'
-        autoComplete='off'
-        onChange={handleChange}
-      />
+        <div className={style.fullname}>
+          <div className={style.field}>
+            <label>First Name</label>
+            <input
+              id='firstname'
+              name='firstname'
+              value={ profile?.firstname }
+              placeholder='First name'
+              type='text'
+              autoComplete='off'
+              onChange={ handleChange }
+              className={ inputClass }
+              disabled={ allowInput ? false : true }
+            />
+          </div>
 
-      <label>Course Code & Year</label>
-      <div className={style.courseDetails}>
-        <input
-          id='courseCode'
-          name='code'
-          value={ profile?.course?.code }
-          placeholder='Course Code'
-          type='text'
-          autoComplete='off'
-          onChange={ handleChange }
-        />
+          <div className={style.field}>
+            <label>Surname</label>
+            <input
+              id='surname'
+              name='surname'
+              value={ profile?.surname }
+              placeholder='Surname'
+              type='text'
+              autoComplete='off'
+              onChange={ handleChange }
+              className={ inputClass }
+              disabled={ allowInput ? false : true }
+            />
+          </div>
+        </div>
+        
+        <div className={style.field}>
+          <label>Course Name</label>
+          <input
+            id='courseName'
+            name='name'
+            value={ profile?.course?.name }
+            placeholder='Course Name'
+            type='text'
+            autoComplete='off'
+            onChange={ handleChange }
+            className={ inputClass }
+            disabled={ allowInput ? false : true }
+          />
+        </div>
+        
+        <div className={style.field}>
+          <label>Course Code & Year</label>
+          <div className={style.courseDetails}>
+            <input
+              id='courseCode'
+              name='code'
+              value={ profile?.course?.code }
+              placeholder='Course Code'
+              type='text'
+              autoComplete='off'
+              onChange={ handleChange }
+              className={ inputClass }
+              disabled={ allowInput ? false : true }
+            />
 
-        <select
-          id='courseYear'
-          name='year'
-          value={ profile?.course?.year }
-          onChange = { handleChange }>
+            <select
+              id='courseYear'
+              name='year'
+              value={ profile?.course?.year }
+              onChange = { handleChange }
+              className={ inputClass }
+              disabled={ allowInput ? false : true }>
 
-          <option value='1'>1</option>
-          <option value='2'>2</option>
-          <option value='3'>3</option>
-          <option value='4'>4</option>
-          <option value='5'>5</option>
-        </select>
-      </div>
+              <option value='1'>1</option>
+              <option value='2'>2</option>
+              <option value='3'>3</option>
+              <option value='4'>4</option>
+              <option value='5'>5</option>
+            </select>
+          </div>
+        </div>
 
-      <label>Say something about yourself</label>
-      <textarea
-        id='bio'
-        name='bio'
-        value={ profile?.bio }
-        type='text'
-        autoComplete='off'
-        onChange={ handleChange }
-      />
+        <div className={style.field}>
+          <label>Say something about yourself</label>
+          <textarea
+            id='bio'
+            name='bio'
+            value={ profile?.bio }
+            placeholder='Describe yourself'
+            type='text'
+            autoComplete='off'
+            onChange={ handleChange }
+            className={ inputClass }
+            disabled={ allowInput ? false : true }
+          />
+        </div>
 
-      <div className={style.buttons}>
-        <Button
-          label='Hobbies'
-          onClick={() => setHobbyPopup(true)}
-        />
+        <div className={style.buttonHolder}>
+          <Button
+            label='Hobbies'
+            onClick={() => setHobbyPopup(true)}
+            className={style.button}
+          />
 
-        <Button
-          label='Save Changes'
-          onClick={updateProfile}
-        />
+          <Button
+            label='Save Changes'
+            onClick={ updateProfile }
+            className={style.button}
+          />
+        </div>
       </div>
 
       {hobbyPopup &&
