@@ -20,6 +20,8 @@ node_modules
 .env.production.local
 .env
 
+profiler.PNG
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
