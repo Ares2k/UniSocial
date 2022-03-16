@@ -1,12 +1,12 @@
-import Button from '../Button/Button';
 import style from './popup.module.css';
-import { IoClose } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 const Popup = (props) => {
   const [hobbies, setHobbies] = useState([]);
   const [selectedHobbies, setSelectedHobbies] = useState([]);
+  const [hobbyArray, setHobbyArray] = useState([]);
 
   useEffect(() => {
     const fetchHobbies = async () => {
@@ -21,24 +21,44 @@ const Popup = (props) => {
       setHobbies(hobbies);
     }
     fetchHobbies();
+
+    const arrayOfHobbies = []
+    const selectedArr = props.profile.hobbies.map(hobby => {
+      arrayOfHobbies.push(hobby);
+      return {
+        value: hobby,
+        label: hobby
+      }
+    });
+
+    setSelectedHobbies(selectedArr);
+    setHobbyArray(arrayOfHobbies);
   }, []);
 
   const handleChange = (e) => {
-    const selected = Array.isArray(e) ? e.map(hobby => hobby.label) : [];
-    setSelectedHobbies(selected);
+    const arrayOfHobbies = []
+    const selectedArr = e.map(hobby => {
+      arrayOfHobbies.push(hobby.label);
+      return {
+        label: hobby.label,
+        value: hobby.value
+      }
+    })
+
+    setSelectedHobbies(selectedArr);
+    setHobbyArray(arrayOfHobbies);
   }
 
   return (props.trigger) ? (
     <div className={style.popup}>
       <div className={style.inner}>
-        <Button
-          label={<IoClose style={{width: '15px', height: '15px'}}/>}
+        <AiOutlineCloseCircle
           className={style.close}
           onClick={() => {
             props.setTrigger(false);
             props.setProfile({
               ...props.profile,
-              hobbies: selectedHobbies
+              hobbies: hobbyArray
             })
           }}
         />
@@ -48,7 +68,9 @@ const Popup = (props) => {
             isMulti
             options={hobbies}
             onChange={handleChange}
-            className={style.select}/>
+            className={style.select}
+            value={selectedHobbies}
+          />
         </div>
       </div>
     </div>
