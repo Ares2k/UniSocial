@@ -20,13 +20,13 @@
   box-shadow: 0px 0px 19px 5px rgba(0, 0, 0, 0.19);
   background-color: #efefef;
   border-radius: 10px;
-  /* border: 1px transparent; */
   margin-bottom: 200px;
   position: relative;
 }
 
 .changePic {
   margin: 10px 0;
+  font-weight: bold;
 }
 
 .header {
@@ -194,7 +194,6 @@ input, textarea {
 
   .changePic {
     font-size: 1.2rem;
-    font-weight: bold;
   }
 
   .field label {
@@ -251,21 +250,6 @@ input, textarea {
 
   input, textarea {
     font-size: 1rem;
-  }
-
-  .editIcon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .button {
-    font-size: 1.2rem;
-  }
-
-  .courseDetails select {
-    width: 14%;
-    text-align: center;
-    font-size: 1.2rem;
   }
 
   .fullname {
@@ -329,8 +313,8 @@ input, textarea {
   }
 
   .editIcon {
-    width: 25px;
-    height: 25px;
+    width: 35px;
+    height: 35px;
   }
 
   .button {
