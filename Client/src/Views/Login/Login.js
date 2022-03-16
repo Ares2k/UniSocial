@@ -1,9 +1,12 @@
 import Button from "../../Components/Button/Button";
-import { useNavigate  } from "react-router-dom";
+import { Navigate, useLocation, useNavigate  } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -25,19 +28,34 @@ const Login = () => {
     
     if(response.status === 401) {
       console.log(response);
+      /*
+       * Clear JWT token upon unsuccessful login to 
+       * prevent token tampering/fabrication */
+      localStorage.removeItem('token');
+      setToken(null);
     } else {
       localStorage.setItem('token', response.token);
-      navigate('/users/mutual', {replace: true});
+      setToken(true);
+
+      /* 
+       * If a protected route was attempted to be accessed before
+       * prompting login, visit that route otherwise redirect
+       * to mutual users */
+      if(location?.state?.from) {
+        navigate(location.state.from);
+      } else {
+        navigate('/users/mutual');
+      }
     }
   }
 
-  return (
+  return !token ? (
     <div className="container">
       <input id='username' placeholder='Username' type='text' autoComplete='off' />
       <input id='password' placeholder='Password' type='password' autoComplete='off' />
       <Button label='Sign In' onClick={handleSubmit}/>
     </div>
-  );
+  ) : <Navigate to="/users/mutual"/>;
 }
  
 export default Login;
