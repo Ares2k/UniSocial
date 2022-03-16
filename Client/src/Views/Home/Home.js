@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import getStartedImg from '../../Assets/Images/get-started.svg';
 import networkingImg from '../../Assets/Images/students-networking.svg';
 import peopleTalkingImg from '../../Assets/Images/people-talking.svg';
