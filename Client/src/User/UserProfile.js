@@ -12,6 +12,7 @@ const UserProfile = () => {
   const [empty, setEmpty] = useState(false);
   const [hobbyPopup, setHobbyPopup] = useState(false);
   const [allowInput, setAllowInput] = useState(null);
+  const [allowAccess, setAllowAccess] = useState(false);
   const [profile, setProfile] = useState({
     username: '',
     firstname: '',
@@ -46,7 +47,7 @@ const UserProfile = () => {
     })
 
     // const updateStatus = await response.json();
-    window.location.reload(true);
+    window.location.reload();
   }
 
   const handleChange = (e) => {
@@ -67,13 +68,15 @@ const UserProfile = () => {
       else
         course[field] = value;
 
-      setProfile({...profile,
+      setProfile({
+        ...profile,
         course
       });
       return;
     }
 
-    setProfile({...profile,
+    setProfile({
+      ...profile,
       [field]: value,
     });  
   }
@@ -107,9 +110,9 @@ const UserProfile = () => {
           surname: user.surname,
           email: user.email,
           course: {
-            code: course.code,
-            name: course.name,
-            year: course.year
+            code: course?.code || '',
+            name: course?.name || '',
+            year: course?.year
           },
           hobbies,
           bio: user.bio
@@ -117,6 +120,10 @@ const UserProfile = () => {
 
         setProfile(profileObj);
         setError(false);
+        setAllowAccess(true);
+      } else {
+        console.log(res);
+        navigate('/login');
       }
     })
     .catch(err => {
@@ -125,20 +132,18 @@ const UserProfile = () => {
   }, [navigate])
 
   // Only render the page if a valid token exists
-  return token ? (
+  return allowAccess ? (
     <div className={style.mainWrapper}>
-      {/* <img src={waveImg} alt=""/> */}
-
       <div className={style.profileCard}>
         <div className={style.header}>
           { allowInput ?
-            <FaCheckCircle
+            (<FaCheckCircle
               className={`${style.editIcon} ${style.headerWrapper}`}
               onClick={editBtnClick}          
-            /> : <FiEdit
+            />) : (<FiEdit
               className={`${style.editIcon} ${style.headerWrapper}`}
               onClick={editBtnClick}
-            />
+            />)
           }
           <h1 className={style.headerWrapper}>Your Profile</h1>
         </div>
