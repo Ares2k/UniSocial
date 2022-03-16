@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import mutual from './mutual.module.css';
 
 const MutualUsers = () => {
   const [users, setUsers] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+  // const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if(!token) {
-      console.log('No JWT token found. Please login again.');
-      navigate('/login');
-    }
+    // if(!token) {
+    //   console.log('No JWT token found. Please login again.');
+    //   navigate('/login');
+    // }
 
     fetch('http://192.168.0.74:5000/api/mutual/', {
       method: 'GET',
@@ -24,7 +25,9 @@ const MutualUsers = () => {
     .then(res => {
       if(res.status !== 200) {
         console.log(res);
-        navigate('/login');
+        localStorage.removeItem('token');
+        setToken(null);
+        // navigate('/login');
       } else {
         setUsers(res.users);
       }
@@ -49,7 +52,7 @@ const MutualUsers = () => {
         </div>
       ))}
     </div>
-  ) : '';
+  ) : <Navigate to="/home"/>;
 }
  
 export default MutualUsers;
