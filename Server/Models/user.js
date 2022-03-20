@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
     year: Number
   },
   bio       : { type: String },
-  hobbies   : { type: Array, default: [] }
+  hobbies   : { type: Array, default: [] },
+  filename  : { type: String, unique: true }
 }, {collection: 'users'});
 
 const model = mongoose.model('UserSchema', UserSchema);
