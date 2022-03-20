@@ -1,11 +1,10 @@
 import Button from "../../Components/Button/Button";
 import phoneImgOrange from '../../Assets/Images/unisocial-phone-orange.svg';
 import style from './register.module.css';
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 const Register = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [input, setInput] = useState({
@@ -272,12 +271,17 @@ const Register = () => {
           
           <div className={style.buttonHolder}>
             <Button label='Sign Up »' onClick={handleSubmit} className={style.button}/>
-            <Button label='Log in Instead?' onClick={() => navigate('/login')} className={style.button} />
+            <div className={style.alreadyRegistered}>
+              <p>Already registered?</p>
+              <Link to="/login" style={{textDecoration: "none", fontWeight: "bold"}}>
+                Sign in.
+              </Link>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  ) : <Navigate to="/users/mutual" state={{ from: location }}/>;
+  ) : <Navigate to="/mutual" state={{ from: location }}/>;
 }
  
 export default Register;

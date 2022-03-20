@@ -47,19 +47,8 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: #e9ecef;
+  background-color: white;
 }
-
-/* .registrationBox {
-  max-width: 1200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: #e9ecef;
-  outline: 1px solid;
-} */
 
 .img {
   height: auto;
@@ -110,7 +99,6 @@ body {
 
 .errMsg {
   color: red;
-  font-weight: bold;
   text-align: left;
   font-size: 1rem;
   /* outline: 1px solid; */
@@ -144,7 +132,8 @@ body {
   border-radius: 7px;
   float: left;
   color: white;
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  /* outline: 1px solid blue; */
 }
 
 .button:hover {
@@ -154,8 +143,21 @@ body {
 .buttonHolder {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  /* outline: 1px solid; */
+}
+
+.alreadyRegistered {
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-evenly;
+  width: 52%;
+}
+
+.alreadyRegistered a {
+  /* font-weight: bold; */
+  color: #df691a;
 }
 
 @media screen and (max-width: 1028px) {
@@ -184,6 +186,24 @@ body {
 
   .container {
     padding: 20px 100px; /* Padding that corresponds to edges of the screen */
+  }
+
+  .buttonHolder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .alreadyRegistered {
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-evenly;
+    width: 70%;
+  }
+
+  .button {
+    width: 60%;
   }
 }
 
@@ -228,6 +248,7 @@ body {
     height: 580px;
     margin-left: 0;
     margin-top: 0;
+    background-color: white;
   }
 
   .container {
@@ -239,8 +260,19 @@ body {
   }
 
   .button {
-    width: 47%;
-    font-size: 0.9rem;
-    margin-bottom: 30px;
+    width: 50%;
+    font-size: 1.3rem;
+  }
+
+  .alreadyRegistered {
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+    margin: 30px 0;
+  }
+
+  .field {
+    border: 1px solid #dbdbdb;
   }
 }
