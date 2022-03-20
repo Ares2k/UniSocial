@@ -14,14 +14,25 @@ import DisplayUser from './Views/MutualUsers/DisplayUser';
 import Home from './Views/Home/Home';
 import PageNotFound from './Views/NotFound/PageNotFound';
 import ProtectedRoutes from './Routes/ProtectedRoutes';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
-  const token = localStorage.getItem('token');
-
   return (
     <Router>
       <div className="App">
         <Navbar />
+        <ToastContainer
+          position="top-right"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable
+          pauseOnHover={false}
+        />
         <Routes>
           <Route path="/" element={<MutualUsers />} />
           <Route path="/home" element={<Home />}/>
