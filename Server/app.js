@@ -19,7 +19,7 @@ app.use('/api', userRouter);
 
 app.use((req, res, next) => {
   res.json({
-    status: err.status || 404,
+    status: 404,
     message: 'Route does not exist'});
 });
 
