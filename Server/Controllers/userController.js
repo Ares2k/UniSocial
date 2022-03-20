@@ -5,36 +5,74 @@ const Hobbies = require('../Models/hobbies');
 const HobbyCounter = require('../Models/hobbyCounter');
 const addUser = require('../Services/addUser');
 const { validateInput, validatePassword } = require('../Services/validate');
+const { uploadFile, getFileStream } = require('../Services/s3Bucket');
+const fs = require('fs');
+const util = require('util');
+const unlinkFile = util.promisify(fs.unlink);
 
 const jwt_token = process.env.TOKEN_SECRET;
 const jwt_refresh_token = process.env.REFRESH_TOKEN;
 
 let refreshTokens = []
 
+const populateHobbies = async (req, res) => {
+  let letter = [];
+
+  fs.readFile('hobbies.txt', async (err, data) => {
+    if (err) throw err;
+    const hobbyData = data.toString();
+
+    for (let i = 0; i <= hobbyData.length; i++) {
+      if (hobbyData[i] !== '\n')
+        letter.push(hobbyData[i])
+      else {
+        let word = letter.join('')
+        let label = word.slice(0, word.length - 1)
+
+        try {
+          await Hobbies.create({
+            value: label,
+            label
+          });
+
+        } catch (error) {
+          console.log(error);
+          return res.json('error');
+        }
+
+        letter = []
+      }
+    }
+  })
+}
+
 const register = async (req, res) => {
-  const { username, email, firstname, surname, password: plainTextPassword } = req.body;
-
   try {
+    const { username, email, firstname, surname, password: plainTextPassword } = req.body;
     validateInput(req.body);
+
+    const password = await bcrypt.hash(plainTextPassword, 10);
+    const userObj = { username, email, firstname, surname, password };
+
+    await addUser(userObj);
+
+    const user = await User.findOne({username});
+    const userDetails = { id: user._id, username: user.username };
+
+    const accessToken = jwt.sign(userDetails, jwt_token);
+    console.log(`${username} has successfully registered.`);
+
+    res.json({ status: 200, token: accessToken });
+
   } catch (err) {
-    if(err === 101) return res.json({status: 'Invalid username', error: 'Username must be 5-20 chars in length'});
-    if(err === 102) return res.json({status: 'error'           , error: 'Invalid email'});
-    if(err === 103) return res.json({status: 'error'           , error: 'Invalid First Name'});
-    if(err === 104) return res.json({status: 'error'           , error: 'Invalid Surname'});
-    if(err === 105) return res.json({status: 'Invalid password', error: 'Must contain characters with length > 4'});
-    if(err === 106) return res.json({status: 'error'           , error: 'Passwords dont match'});
+    if(err === 101) return res.json({status: 101, error: 'Username must be 5-20 chars in length'});
+    if(err === 102) return res.json({status: 102, error: 'Invalid email'});
+    if(err === 103) return res.json({status: 103, error: 'Invalid First Name'});
+    if(err === 104) return res.json({status: 104, error: 'Invalid Surname'});
+    if(err === 105) return res.json({status: 105, error: 'Must contain characters with length > 4'});
+    if(err === 106) return res.json({status: 106, error: 'Passwords dont match'});
+    if(err === 11000) return res.json({ status: 11000, error: 'Email or username is already in use' });
   }
-
-  const password = await bcrypt.hash(plainTextPassword, 10);
-  const userDetails = {username, email, firstname, surname, password};
-
-  try {
-    await addUser(userDetails);  
-  } catch (err) {
-    if(err === 11000) return res.json({status: 'error', error: 'Email or username is already in use'});
-  }
-
-  res.json({status: 'ok', message: 'Account created Successfully'});
 }
 
 const login = async (req, res) => {
@@ -123,7 +161,8 @@ const getProfile = async (req, res) => {
       course: user.course,
       year: user.year,
       bio: user.bio,
-      hobbies: user.hobbies
+      hobbies: user.hobbies,
+      filename: user.filename
     }});
   } catch (err) {
     return res.json({status: 'error', error: err});
@@ -131,11 +170,11 @@ const getProfile = async (req, res) => {
 }
 
 const updateProfile = async (req, res) => {
-  const { firstname, surname, course, bio, hobbies } = req.body.profile;
   const userID = req.user.id; 
   
-  console.log(firstname, surname, course, bio, hobbies);
   try {
+    const { firstname, surname, course, bio, hobbies } = req.body.profile;
+    console.log(firstname, surname, course, bio, hobbies);
     await User.updateOne(
       {_id: userID},
       {$set: {
@@ -213,6 +252,34 @@ const getHobbies = async (req, res) => {
   res.json({status: 200, hobbies});
 }
 
+const uploadImage = async (req, res) => {
+  try {
+    const file = req.file;
+    const userID = req.user.id; 
+
+    const result = await uploadFile(file);    
+    await unlinkFile(file.path);
+    
+    await User.updateOne(
+      {_id: userID},
+      {$set: {filename: file.filename}},
+      {upsert: true}
+    );
+
+    res.json({ imagePath: `/images/${result.Key}` });
+  } catch (err) {
+    console.log(err);
+    return res.json({ status: 401, error: err });
+  }
+}
+
+const getImage = async (req, res) => {
+  const key = req.params.key;
+  const readStream = getFileStream(key);
+
+  readStream.pipe(res);
+}
+
 module.exports = {
   register,
   login,
@@ -223,5 +290,8 @@ module.exports = {
   updateProfile,
   mutualUsers,
   mutualUser,
-  getHobbies
+  getHobbies,
+  populateHobbies,
+  uploadImage,
+  getImage
 }
