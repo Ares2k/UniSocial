@@ -31,12 +31,13 @@ const Home = () => {
               onClick={ token ? () => navigate('/mutual') : () => navigate('/register') }
             />
 
+            { !token &&
             <p>
               Already have an account?
               <Link to="/login" style={{textDecoration: "none", color: "#df691a", fontWeight: "bold"}}>
               &nbsp; Log in
               </Link>
-            </p>
+            </p>}
 
           </div>
         </div>
