@@ -1,0 +1,104 @@
+*, *::after, *::before {
+  box-sizing: border-box;
+  /* margin: 0;
+  padding: 0; */
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+}
+
+.form {
+  margin: 0 auto;
+  max-width: 350px;
+  width: calc(100% - 20px);
+  margin-top: 80px;
+}
+
+.form h1 {
+  color: #df691a;
+}
+
+.loginForm {
+  margin-top: 20px;
+  border-radius: 5px;
+  box-shadow: rgb(180 180 180 / 50%) 0px 0px 15px 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcomeBack {
+  margin: 20px 0;
+  font-size: 1.4rem;
+}
+
+.inputWrapper {
+  border: 1px solid #dbdbdb;
+  margin: 5px 0;
+  border-radius: 5px;
+  width: 80%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputWrapper input {
+  margin: 4px 0;
+  border-radius: 5px;
+  padding: 0;
+}
+
+.centeredInput {
+  width: 90%;
+}
+
+.centeredInput p {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #787878;
+}
+
+.button {
+  width: 80%;
+  margin: 20px 0;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #df691a;
+  cursor: pointer;
+  outline: none;
+  border: none;  
+  transition: .3s;
+  border-radius: 5px;
+  float: left;
+  color: white;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: rgb(207, 129, 77);
+}
+
+.links {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 80%;
+}
+
+.errMsg {
+  color: red;
+  float: left;
+}
