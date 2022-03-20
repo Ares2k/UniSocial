@@ -1,0 +1,56 @@
+.error {
+  margin: 0 auto;
+  width: 100%;
+  padding: 10px;
+}
+
+.error img {
+  width: 30%;
+}
+
+.error h1 {
+  font-size: 1.8rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  background-color: #df691a;
+  cursor: pointer;
+  outline: none;
+  border: none;  
+  transition: .3s;
+  border-radius: 7px;
+  color: white;
+  margin-top: 20px;
+}
+
+.button:hover {
+  background-color: rgb(207, 129, 77);
+}
+
+@media screen and (max-width: 1024px) {
+  .error img {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .error img {
+    width: 50%;
+  }
+
+  .error h1 {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .error img {
+    width: 100%;
+  }
+
+  .error h1 {
+    font-size: 1.2rem;
+  }
+}
