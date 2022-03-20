@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import getStartedImg from '../../Assets/Images/get-started.svg';
 import networkingImg from '../../Assets/Images/students-networking.svg';
 import peopleTalkingImg from '../../Assets/Images/people-talking.svg';
@@ -28,8 +28,16 @@ const Home = () => {
             <Button
               label={ token ? "Meet Students »" : "Create an Account »" }
               className={ style.button }
-              onClick={ token ? () => navigate('/users/mutual') : () => navigate('/register') }
+              onClick={ token ? () => navigate('/mutual') : () => navigate('/register') }
             />
+
+            <p>
+              Already have an account?
+              <Link to="/login" style={{textDecoration: "none", color: "#df691a", fontWeight: "bold"}}>
+              &nbsp; Log in
+              </Link>
+            </p>
+
           </div>
         </div>
         
