@@ -1,18 +1,18 @@
 import Button from '../Components/Button/Button';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import style from './userProfile.module.css';
 import Popup from '../Components/Popup/Popup';
-import profileImg from '../Assets/Images/profiler.PNG';
 import { FiEdit } from 'react-icons/fi';
-import { FaCheckCircle } from 'react-icons/fa';
+import anonImg from '../Assets/Images/anon.jpg';
+import { BsFillCameraFill } from 'react-icons/bs';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
-  const [error, setError] = useState(false);
-  const [empty, setEmpty] = useState(false);
   const [hobbyPopup, setHobbyPopup] = useState(false);
   const [allowInput, setAllowInput] = useState(null);
-  const [allowAccess, setAllowAccess] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [profile, setProfile] = useState({
     username: '',
     firstname: '',
@@ -23,11 +23,11 @@ const UserProfile = () => {
       name: '',
       year: ''
     },
-    bio: ''
+    bio: '',
+    filename: ''
   });
-
+  const [error, setError] = useState(profile);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
   let inputClass = allowInput ? style.enabled : style.disabled;
 
   const updateProfile = async () => {
@@ -46,21 +46,38 @@ const UserProfile = () => {
       console.log('Unable to update profile');
     })
 
-    // const updateStatus = await response.json();
     window.location.reload();
   }
+
+  // const handleChange = (e) => {
+  //   setInput({
+  //     ...input,
+  //     [e.target.id]: e.target.value
+  //   });
+
+    // e.target.value ? 
+    //   setError({
+    //     ...error,
+    //     [e.target.id + "Err"]: ""
+    //   }) : setError({
+    //     ...error,
+    //     [e.target.id + "Err"]: `${e.target.placeholder} required`
+    //   })
+  // }
 
   const handleChange = (e) => {
     const field = e.target.name
     const value = e.target.value;
     let course = {...profile.course}
 
-    if(value === '') {
-      console.log(`${field} cannot be empty`);
-      setEmpty(true);
-    } else {
-      setEmpty(false);
-    }
+    value ? 
+      setError({
+        ...error,
+        [e.target.id + "Err"]: ""
+      }) : setError({
+        ...error,
+        [e.target.id + "Err"]: `${e.target.placeholder} required`
+      }) 
 
     if(field === 'code' || field === 'name' || field === 'year') {
       if(field === 'year') 
@@ -83,11 +100,27 @@ const UserProfile = () => {
 
   const editBtnClick = () => setAllowInput(!allowInput);
 
+  const fileSelected = async (e) => {
+    const image = e.target.files[0];
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    await fetch('http://192.168.0.74:5000/api/images', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData
+    });
+
+    window.location.reload();
+
+    // setFile(image);
+  }
+
   useEffect(() => {
-    if(!token) {
-      console.log('No JWT token found. Please login again.');
-      navigate('/login');
-    }
+    let isMounted = true;
 
     fetch('http://192.168.0.74:5000/api/profile', {
       method: 'GET',
@@ -115,32 +148,32 @@ const UserProfile = () => {
             year: course?.year
           },
           hobbies,
-          bio: user.bio
+          bio: user.bio,
+          filename: user.filename
         };
 
-        setProfile(profileObj);
-        setError(false);
-        setAllowAccess(true);
+        return isMounted ? (
+          setProfile(profileObj)
+        ) : null;
       } else {
-        console.log(res);
-        navigate('/login');
+        localStorage.removeItem('token');
+        return isMounted ? setToken(null) : null;
       }
     })
     .catch(err => {
       console.log(err);
     });
+
+    return () => isMounted = false;
   }, [navigate])
 
   // Only render the page if a valid token exists
-  return allowAccess ? (
+  return token ? (
     <div className={style.mainWrapper}>
       <div className={style.profileCard}>
         <div className={style.header}>
-          { allowInput ?
-            (<FaCheckCircle
-              className={`${style.editIcon} ${style.headerWrapper}`}
-              onClick={editBtnClick}          
-            />) : (<FiEdit
+          { !allowInput &&
+            (<FiEdit
               className={`${style.editIcon} ${style.headerWrapper}`}
               onClick={editBtnClick}
             />)
@@ -149,13 +182,33 @@ const UserProfile = () => {
         </div>
 
         <div className={style.profileImageHolder}>
-          <img src={profileImg} alt="" className={style.profileImg} />
-          <Link
-            to="#"
-            style={{ color: "#df691a"}}
-            className={style.changePic}>
-            Click to change picture
-          </Link>
+          <div className={style.imageBorder}>
+            { profile.filename ? 
+              <img
+                src={`/api/images/${profile.filename}`}
+                alt=""
+                className={style.profileImg}
+              />
+              :
+              <img
+                src={anonImg}
+                alt=""
+                className={style.profileImg}
+              />
+            }
+          </div>
+          
+          <label htmlFor='fileUpload' className={style.fileLabel}>
+            <BsFillCameraFill
+              className={style.cameraIcon}
+            />
+          </label>
+          <input
+            id='fileUpload'
+            type='file'
+            accept='image/png, image/jpeg'
+            onChange={fileSelected}
+          />
         </div>
         
         <div className={style.signupDetails}>
@@ -167,6 +220,7 @@ const UserProfile = () => {
               name='username'
               value={ profile?.username }
               disabled={true}
+              style={{cursor: "not-allowed"}}
             />
           </div>
 
@@ -175,13 +229,14 @@ const UserProfile = () => {
             <input
               id='email'
               name='email'
-              value={profile?.email}
+              value={ profile?.email }
               placeholder='Email'
               type='email'
               autoComplete='off'
               onChange={handleChange}
               className={style.disabled}
               disabled={true}
+              style={{cursor: "not-allowed"}}
             />
           </div>
         </div>
@@ -283,19 +338,21 @@ const UserProfile = () => {
         <div className={style.buttonHolder}>
           <Button
             label='Hobbies'
-            onClick={() => setHobbyPopup(true)}
+            onClick={() => allowInput && setHobbyPopup(true)}
             className={style.button}
+            style={ allowInput ? {cursor: "pointer"} : {cursor: "not-allowed"}}
           />
 
           <Button
             label='Save Changes'
-            onClick={ updateProfile }
+            onClick={ allowInput && updateProfile }
             className={style.button}
+            style={ allowInput ? {cursor: "pointer"} : {cursor: "not-allowed"}}
           />
         </div>
       </div>
 
-      {hobbyPopup &&
+      { hobbyPopup &&
         <Popup
           trigger={ hobbyPopup }
           setTrigger={ setHobbyPopup }
@@ -303,11 +360,8 @@ const UserProfile = () => {
           setProfile={ setProfile }
         />
       }
-
-      { error && <h2>{error}</h2> }
-      { empty && <h2>Cannot be empty</h2> }
     </div>
-  ) : '';
+  ) : <Navigate to="/login"/>;
 }
  
 export default UserProfile;
