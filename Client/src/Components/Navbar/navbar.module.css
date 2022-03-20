@@ -21,7 +21,7 @@ body {
 .navbar a {
   text-decoration: none;
   color: white;
-  padding: 1rem;
+  padding: 0.8rem 1.3rem;
   display: block;
 }
 
@@ -54,15 +54,21 @@ body {
   margin: 0 !important;
 }
 
-@media (max-width: 425px) {
+@media (max-width: 880px) {
+  body {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 600px) {
   .icons {
     display: flex;
     position: absolute;
     justify-content: space-between;
-    left: 50%;
+    left: 25%;
     transform: translateX(80%);
-    top: 35%;
-    width: 25vw;
+    top: 25%;
+    width: 40vw;
   }
 
   .links {
@@ -72,11 +78,5 @@ body {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
-  }
-}
-
-@media (max-width: 880px) {
-  body {
-    overflow: visible;
   }
 }
