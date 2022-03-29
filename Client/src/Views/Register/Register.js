@@ -1,10 +1,12 @@
 import Button from "../../Components/Button/Button";
 import phoneImgOrange from '../../Assets/Images/unisocial-phone-orange.svg';
 import style from './register.module.css';
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Register = () => {
+  document.title = 'UniSocial';
+
   const location = useLocation();
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [input, setInput] = useState({
@@ -16,6 +18,7 @@ const Register = () => {
     confirmPassword: ''
   })
   const [error, setError] = useState(input);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setInput({
@@ -60,11 +63,15 @@ const Register = () => {
         if(isMounted) {
           setToken(null);
         }
+
       } else {
         localStorage.setItem('token', response.token);
-        if(isMounted) {
-          setToken(true);
-        } 
+
+        if (location?.state?.from) {
+          navigate(location.state.from, { state: { from: location } });
+        } else {
+          navigate('/mutual', { state: { from: location } });
+        }
       }
 
       return () => isMounted = false;
@@ -281,7 +288,7 @@ const Register = () => {
         </div>
       </div>
     </div>
-  ) : <Navigate to="/mutual" state={{ from: location }}/>;
+  ) : <Navigate to="/mutual" />;
 }
  
 export default Register;
