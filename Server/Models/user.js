@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+const SocialLink = new mongoose.Schema({
+  title: { type: String },
+  link:  { type: String },
+  image: { type: String }
+});
+
 const UserSchema = new mongoose.Schema({
   username  : { type: String, required: true, unique: true },
   email     : { type: String, required: true, unique: true },
@@ -13,7 +19,8 @@ const UserSchema = new mongoose.Schema({
   },
   bio       : { type: String },
   hobbies   : { type: Array, default: [] },
-  filename  : { type: String, unique: true }
+  filename  : { type: String },
+  socials   : [ SocialLink ]
 }, {collection: 'users'});
 
 const model = mongoose.model('UserSchema', UserSchema);
