@@ -30,7 +30,7 @@ const getFileStream = (fileKey) => {
     Bucket: bucket
   }
 
-  return s3.getObject(downloadParams).createReadStream();
+  return  s3.getObject(downloadParams).createReadStream();
 }
 
 module.exports = {
