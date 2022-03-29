@@ -23,7 +23,7 @@ body {
 }
 
 .form h1 {
-  color: #df691a;
+  color: #df691ab4;
 }
 
 .loginForm {
@@ -53,6 +53,12 @@ body {
   align-items: center;
 }
 
+.inputWrapper:focus-within {
+  background-color: #fff;
+  border-color: #f1b287;
+  box-shadow: 0 0 0 0.2rem rgb(223 105 26 / 25%);
+}
+
 .inputWrapper input {
   margin: 4px 0;
   border-radius: 5px;
@@ -74,7 +80,7 @@ body {
   margin: 20px 0;
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #df691a;
+  background-color: #df691ab4;
   cursor: pointer;
   outline: none;
   border: none;  
