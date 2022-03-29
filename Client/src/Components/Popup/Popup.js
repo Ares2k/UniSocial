@@ -60,11 +60,13 @@ const Popup = (props) => {
               ...props.profile,
               hobbies: hobbyArray
             })
+            props.setSelected('links');
           }}
         />
         
         <div className={style.hobbies}>
           <Select
+            tabIndex={0}
             isMulti
             options={hobbies}
             onChange={handleChange}
