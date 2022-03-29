@@ -5,6 +5,8 @@ import style from './login.module.css';
 import { validateLogin } from '../../Helpers/validateInput';
 
 const Login = () => {
+  document.title = 'UniSocial';
+
   const navigate = useNavigate();
   const location = useLocation();
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -37,20 +39,17 @@ const Login = () => {
       
       if(response.status !== 200) {
         localStorage.removeItem('token');
-        setError({
+        return isMounted ? setError({
           usernameErr: response.error
-        })
-        return isMounted ? setToken(null) : null;
+        }) : null;
+
       } else {
         localStorage.setItem('token', response.token);
-
-        if (isMounted)
-          setToken(true);
-
-        if(location?.state?.from) {
-          navigate(location.state.from);
+        
+        if (location?.state?.from) {
+          navigate( location.state.from, {state: {from: location}} );
         } else {
-          navigate('/mutual');
+          navigate( '/mutual', {state: {from: location}} );
         }
       }
     } else {
@@ -59,6 +58,8 @@ const Login = () => {
         passwordErr: userInput.passwordErr
       })
     }
+
+    return () => isMounted = false;
   }
 
   return !token ? (
@@ -76,7 +77,8 @@ const Login = () => {
             <input
               id='username'
               type='text'
-              autoComplete='off'/>
+              autoComplete='off'
+            />
           </div>
         </div>
         
@@ -84,7 +86,11 @@ const Login = () => {
         <div className={style.inputWrapper}>
           <div className={style.centeredInput}>
             <p>Password</p>
-            <input id='password' type='password' autoComplete='off' />
+            <input
+              id='password'
+              type='password'
+              autoComplete='off'
+            />
           </div>
         </div>
 
@@ -97,10 +103,10 @@ const Login = () => {
 
       <p className={style.links}>
         Don't have an account?
-        <Link to="/register" style={{color: "#df691a", textDecoration: "none", fontWeight: "bold"}}>Register here.</Link>
+        <Link to="/register" style={{color: "#df691ab4", textDecoration: "none", fontWeight: "bold"}}>Register here.</Link>
       </p>
     </div>
-  ) : <Navigate to="/mutual" state={{ from: location }}/>;
+  ) : <Navigate to="/mutual" />;
 }
  
 export default Login;
