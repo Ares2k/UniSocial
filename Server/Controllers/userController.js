@@ -62,7 +62,7 @@ const register = async (req, res) => {
     const accessToken = jwt.sign(userDetails, jwt_token);
     console.log(`${username} has successfully registered.`);
 
-    res.json({ status: 200, token: accessToken });
+    return res.json({ status: 200, token: accessToken });
 
   } catch (err) {
     if(err === 101) return res.json({status: 101, error: 'Username must be 5-20 chars in length'});
@@ -162,7 +162,8 @@ const getProfile = async (req, res) => {
       year: user.year,
       bio: user.bio,
       hobbies: user.hobbies,
-      filename: user.filename
+      filename: user.filename,
+      socials: user.socials
     }});
   } catch (err) {
     return res.json({status: 'error', error: err});
@@ -173,7 +174,7 @@ const updateProfile = async (req, res) => {
   const userID = req.user.id; 
   
   try {
-    const { firstname, surname, course, bio, hobbies } = req.body.profile;
+    const { firstname, surname, course, bio, hobbies, socials } = req.body.profile;
     console.log(firstname, surname, course, bio, hobbies);
     await User.updateOne(
       {_id: userID},
@@ -186,7 +187,8 @@ const updateProfile = async (req, res) => {
           year: course.year
         },
         bio: bio,
-        hobbies: hobbies
+        hobbies: hobbies,
+        socials: socials
       }},{upsert: true});
   } catch (err) {
     console.log(err);
@@ -201,7 +203,16 @@ const mutualUsers = async (req, res) => {
 
   const user = await User.findOne(
     {_id: userID},
-    {_id: 1, username: 1, firstname: 1, surname: 1, bio: 1, course: 1, hobbies: 1}
+    {
+      _id: 1,
+      username: 1,
+      firstname: 1,
+      surname: 1,
+      bio: 1,
+      course: 1,
+      hobbies: 1,
+      socials: 1
+    }
   ).lean();
 
   const userHobbies = user.hobbies;
@@ -209,7 +220,17 @@ const mutualUsers = async (req, res) => {
 
   const mutualUsers = await User.find(
     {_id: {$ne: userID}, hobbies: {$in: userHobbies} },
-    {_id: 1, username: 1, firstname: 1, surname: 1, bio: 1, course: 1, hobbies: 1}
+    {
+      _id: 1,
+      username: 1,
+      firstname: 1,
+      surname: 1,
+      bio: 1,
+      course: 1,
+      hobbies: 1,
+      filename: 1,
+      socials: 1
+    }
   ).lean();
 
   mutualUsers.forEach(user => {
@@ -219,32 +240,55 @@ const mutualUsers = async (req, res) => {
         hobbies.push(hobby);
       }
     })
+
     userObj.push({
       "_id": user._id,
       "username": user.username,
       "firstname": user.firstname,
       "surname": user.surname,
       "bio": user.bio,
-      "hobbies": hobbies});
+      "hobbies": hobbies,
+      "course": user.course,
+      "filename": user.filename
+    });
   })
 
   userObj.sort((first, next) => {
     return next.hobbies.length - first.hobbies.length;
   });
 
-  // res.status(200).json({users: userObj});
   res.json({ status: 200, users: userObj });     
 }
 
 const mutualUser = async (req, res) => {
   const user = await User.findOne(
-    {username: req.params.id},
-    {username: 1, email: 1, firstname: 1, surname: 1, hobbies: 1, bio: 1, course: 1}
+    { username: req.params.id },
+    { username: 1,
+      email: 1,
+      firstname: 1,
+      surname: 1,
+      hobbies: 1,
+      bio: 1,
+      course: 1,
+      filename: 1,
+      socials: 1
+    }
   ).lean();
 
   if(!user) return res.json({status: 404, message: 'User not found'});
 
-  res.json({status: 200, user: user});
+  const currentUser = await User.findOne(
+    { username: req.user.username },
+    { username: 1, hobbies: 1 }
+  )
+
+  const mutualHobbies = user.hobbies.filter(hobby => {
+    if (currentUser.hobbies.includes(hobby)) {
+      return hobby;
+    }
+  })
+
+  res.json({ status: 200, user: user, mutualHobbies });
 }
 
 const getHobbies = async (req, res) => {
@@ -275,8 +319,8 @@ const uploadImage = async (req, res) => {
 
 const getImage = async (req, res) => {
   const key = req.params.key;
-  const readStream = getFileStream(key);
 
+  const readStream = getFileStream(key);
   readStream.pipe(res);
 }
 
