@@ -14,9 +14,6 @@ const addUser = async (user) => {
     console.log('User created successfully.');
     
   } catch (err) {
-    if(err.code === 11000) {
-      throw 11000;
-    }
     throw err;
   }
 }
