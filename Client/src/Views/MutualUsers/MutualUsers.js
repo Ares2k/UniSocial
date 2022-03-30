@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
-import mutual from './mutual.module.css';
+import { useNavigate, Link, Navigate, useLocation } from "react-router-dom";
+import style from './mutual.module.css';
+import { notifyLogin, notifyRegister } from "../../Helpers/toastNotify";
+import ProfilePicture from "../../Components/ProfilePicture/ProfilePicture";
+import Button from "../../Components/Button/Button";
+import { FaGraduationCap, FaUniversity } from 'react-icons/fa';
+import { AiOutlineFieldNumber } from "react-icons/ai";
+import EducationInfo from "../../Components/Education/EducationInfo";
+import MutualEducation from "../../Components/Education/MutualEducation";
 
 const MutualUsers = () => {
   const [users, setUsers] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const navigate = useNavigate();
-  // const token = localStorage.getItem('token');
+  let location = useLocation();
 
   useEffect(() => {
-    // if(!token) {
-    //   console.log('No JWT token found. Please login again.');
-    //   navigate('/login');
-    // }
+    document.title = 'Mutual Users';
+    let isMounted = true;    
 
     fetch('http://192.168.0.74:5000/api/mutual/', {
       method: 'GET',
@@ -24,35 +29,83 @@ const MutualUsers = () => {
     .then(res => res.json())
     .then(res => {
       if(res.status !== 200) {
-        console.log(res);
         localStorage.removeItem('token');
-        setToken(null);
-        // navigate('/login');
+        return isMounted ? setToken(null) : null;
       } else {
-        setUsers(res.users);
+        return isMounted ? setUsers(res.users) : null;
       }
     })
     .catch(err => {
       console.log(err);
     })
+
+    if(location?.state?.from?.pathname === '/login') {
+      notifyLogin();
+    }
+      
+    if (location?.state?.from?.pathname === '/register') {
+      notifyRegister();
+    }
+
+    window.history.replaceState({}, document.title);
+
+    return () => isMounted = false;
   }, [navigate])
-  
+
   return token ? (
     <div>
-      {console.log(users)}
-      {users && users.map((user) => (
-        <div className={mutual.user} key={user._id}>
-          <Link to={`/users/${user.username}`} >
-            <h2>{ user.username }</h2>
-          </Link>
+      {users?.length > 0 ?
+      (<div className={style.container}>
+        {users.map(user => (
 
-          {user.hobbies.map(hobby => (
-            <p key={hobby}>Hobby: {hobby}</p>
-          ))}
+          <div key={user.username} className={style.profileCard}>
+            <Link to={`/users/${user.username}`} >
+              <ProfilePicture
+                filename={user.filename}
+                imageContainer={style.profilePic}
+              />
+            </Link>
+
+            <h1 className={style.fullName}>{user.firstname} {user.surname}</h1>
+            <p style={{color: "#b8b8b8", fontSize: "1.1rem"}}>@{user.username}</p>
+            <p style={{margin: "20px 0", fontSize: "1.3rem"}}>Mutual interests: {user.hobbies.length}</p>
+            
+            <MutualEducation
+              wrapper={style.courseInfo}
+              icon={<FaUniversity style={{ width: "25px", height: "25px" }} />}
+              info={user?.course?.name}
+            />
+
+            <MutualEducation
+              wrapper={style.courseInfo}
+              icon={<AiOutlineFieldNumber style={{ width: "25px", height: "25px" }} />}
+              info={user?.course?.code}
+            />
+
+            <MutualEducation
+              wrapper={style.courseInfo}
+              icon={<FaGraduationCap style={{ width: "25px", height: "25px" }} />}
+              info={user?.course?.year}
+            />
+
+            <Button 
+              label="View Full Profile"
+              className={style.button}
+              onClick={() => navigate(`/users/${user.username}`)}
+            />
+          </div>
+
+        ))}
+      </div>) : (
+        <div className={style.noUsersFound}>
+          <h2>No mutual users found !</h2>
+          <p>This can happen due to the following:</p>
+          <p>1.) You haven't configured your interests in your <Link to="/profile/edit" style={{ textDecoration: "none", color: "#df691ab4"}}>profile.</Link></p>
+          <p>2.) There are no users that share your interests.</p>
         </div>
-      ))}
+      )}
     </div>
-  ) : <Navigate to="/home"/>;
+  ) : <Navigate to="/login" />;
 }
  
 export default MutualUsers;

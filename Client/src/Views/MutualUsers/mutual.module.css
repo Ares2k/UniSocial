@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
+.container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex: 1;
+  flex-wrap: wrap;
+  /* outline: 1px solid red; */
+  width: 100%;
+}
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 30px;
+  /* outline: 1px solid; */
+  max-width: 300px;
+  width: calc(100% - 20px);
+  border-radius: 5px;
+  box-shadow: rgb(180 180 180 / 50%) 0px 0px 8px 1px;
+}
+
+.profileCard:hover {
+  background-color: rgba(239, 121, 4, 0.05);
+  transition: .1s;
+}
+
+.profilePic {
+  display: inline-block;
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid black;
+  margin: 20px 0;
+}
+
+.fullName {
+  font-weight: bold;
+  font-size: 1.4rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+p {
+  font-family: 'Nunito', sans-serif;
+}
+
+.button {
+  width: 80%;
+  margin: 20px 0;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #df691ab4;
+  cursor: pointer;
+  outline: none;
+  border: none;  
+  transition: .3s;
+  border-radius: 5px;
+  float: left;
+  color: white;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: rgb(207, 129, 77);
+}
+
+.courseInfo {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 5px 0;
+  /* outline: 1px solid; */
+}
+
+.noUsersFound {
+  margin: 30px auto;
+  max-width: 600px;
+  width: calc(100% - 20px);
+}
+
+.noUsersFound > h2 {
+  margin: 10px 0;
+}
