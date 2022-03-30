@@ -21,7 +21,6 @@ html {
 }
 
 .banner {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../Assets/Images/nature.jpg');
   height: 20vh;
   background-position: center;
   background-repeat: no-repeat;
@@ -31,6 +30,7 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: rgb(180 180 180 / 80%) 0px 0px 10px 5px;
 }
 
 .banner p {
@@ -176,6 +176,10 @@ html {
   background-color: rgba(248, 248, 248, 0.767);
   box-shadow: rgb(180 180 180 / 40%) 0px 0px 5px 1px;
   cursor: pointer;
+}
+
+.addMore {
+  justify-content: center;
 }
 
 .socialIcons {

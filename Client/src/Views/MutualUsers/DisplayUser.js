@@ -5,14 +5,9 @@ import ProfilePicture from "../../Components/ProfilePicture/ProfilePicture";
 import { AiOutlineFieldNumber, AiOutlineLink } from 'react-icons/ai';
 import { FaGraduationCap, FaRegHandshake, FaUniversity } from 'react-icons/fa';
 import { MdOutlineSportsEsports } from 'react-icons/md';
-import instagramImg from '../../Assets/Images/instagram.svg';
-import linkedInImg from '../../Assets/Images/linkedin.svg';
-import facebookImg from '../../Assets/Images/facebook.svg';
-import twitterImg from '../../Assets/Images/twitter.svg';
-import webImg from '../../Assets/Images/web.svg';
 import SocialCard from "../../Components/Socials/SocialCard";
 import LinkHeader from "../../Components/LinkHeaders/LinkHeader";
-import EducationInfo from "../../Components/Education/EducationHeader";
+import EducationInfo from "../../Components/Education/EducationInfo";
 
 const DisplayUser = () => {
   const [user, setUser] = useState({
@@ -21,6 +16,7 @@ const DisplayUser = () => {
     surname: '',
     email: '',
     filename: '',
+    banner: '',
     course: {
       name: '',
       code: '',
@@ -35,15 +31,10 @@ const DisplayUser = () => {
   const [mutual, setMutual] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  let counter = 0;
   
   useEffect(() => {
-    // let token = localStorage.getItem('token');
-
-    // if(!token) {
-    //   console.log('No JWT token found. Please login again.');
-    //   navigate('/login');
-    // }
-
+    let isMounted = true;
     fetch(`http://192.168.0.74:5000/api/mutual/${id}`, {
       method: 'GET',
       headers: {
@@ -55,39 +46,53 @@ const DisplayUser = () => {
     .then(res => {
       if(res.status === 200) {
         document.title = `${res.user.firstname} ${res.user.surname} @${res.user.username}`;
-        setUser(res.user);
-        setMutual(res.mutualHobbies);
+
+        if (JSON.parse(atob(token.split('.')[1])).username === res.user.username) {
+          navigate('/profile/edit')
+        }
+
+        if (isMounted) {
+          setUser(res.user);
+          setMutual(res.mutualHobbies);
+        }
       } else if(res.status === 404) {
-        console.log(res);
         setErrorMsg('User not found!')
       } else {
-        navigate('/login');
+        localStorage.removeItem('token');
+        return isMounted ? setToken(null) : null;
       }
     })
     .catch(err => {
       console.log(err);
     })
+
+    return () => isMounted = false;
   }, [id, navigate, token])
 
   const setActive = e => {
-    console.log('asdasdasd');
     setSelected(e.currentTarget.id);
   }
 
   return token ? (    
     !errorMsg ? (
     <div className={style.container}>
-      <div className={style.banner}>
-        <p>Hey, I'm Timur! 👋</p>
-      </div>
+        <div
+          className={style.banner}
+          style={{
+            backgroundImage:
+              user.banner ? `linear-gradient(rgba(0, 0, 0, 0.5),
+              rgba(0, 0, 0, 0.5)),
+              url(/api/images/${user?.banner}) ` : `linear-gradient(rgb(255 255 255 / 50%),
+              rgba(0, 0, 0, 0.5))`
+          }}
+        >
+        </div>
  
       <div className={style.imagePlacer}>
-        <div className={style.profilePic}>
-          <ProfilePicture 
-            filename={user.filename}
-            className={style.image}
-          />
-        </div>
+        <ProfilePicture
+          filename={user.filename}
+          imageContainer={style.profilePic}
+        />
 
         <div className={style.name}>
           <h1>{ user.firstname } { user.surname }</h1>
@@ -121,9 +126,9 @@ const DisplayUser = () => {
           </div>
 
           <div className={style.course} style={{flexDirection: "row", margin: "0"}}>
-            <p className={style.courseInfo}>{ user?.course?.name }</p>
-            <p className={style.courseInfo}>{ user?.course?.code }</p>
-            <p className={style.courseInfo}>{ user?.course?.year }</p>
+            <p className={style.courseInfo}>{ user?.course?.name || 'N/A'}</p>
+            <p className={style.courseInfo}>{ user?.course?.code || 'N/A'}</p>
+            <p className={style.courseInfo}>{ user?.course?.year || 'N/A'}</p>
           </div>
         </div>
 
@@ -155,35 +160,22 @@ const DisplayUser = () => {
 
         {selected === 'links' &&
           <div>
-            <SocialCard
-              image={instagramImg}
-              title={"Instagram"}
-              description={"instagram.com/timur_sult"}
-            />
-
-            <SocialCard
-              image={linkedInImg}
-              title={"LinkedIn"}
-              description={"linkedin.com/in/tsult/"}
-            />
-
-            <SocialCard
-              image={facebookImg}
-              title={"Facebook"}
-              description={"facebook.com/timur.sultanov.587"}
-            />
-
-            <SocialCard
-              image={twitterImg}
-              title={"Twitter"}
-              description={"twitter.com/ares2k"}
-            />
-
-            <SocialCard
-              image={webImg}
-              title={"My Site"}
-              description={"Timur.com"}
-            />
+              {user?.socials?.length > 0 ? user.socials.map(social => (
+                <a
+                  href={`//${social.link}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  key={counter}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                <SocialCard
+                  key={counter++}
+                  image={social.image}
+                  title={social.title}
+                  description={social.link}
+                />
+                </a>
+              )) : <p style={{fontSize: "1.3rem"}}>No Socials Found</p>}
           </div>
         }
 
