@@ -7,4 +7,4 @@ const MutualEducation = (props) => {
   );
 }
  
-export default MutualEducation;
+export default MutualEducation; 
