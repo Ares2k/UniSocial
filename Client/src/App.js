@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import Register from './Views/Register/Register';
 import Login from './Views/Login/Login';
-import EditProfile from './Views/User/EditProfile';
 import MutualUsers from './Views/MutualUsers/MutualUsers';
 import Navbar from './Components/Navbar/Navbar';
 import DisplayUser from './Views/MutualUsers/DisplayUser';
@@ -15,6 +14,7 @@ import PageNotFound from './Views/NotFound/PageNotFound';
 import ProtectedRoutes from './Routes/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditProfile from './Views/User/EditProfile';
 
 const App = () => {
   return (
