@@ -20,20 +20,6 @@ html {
   overflow: hidden;
 }
 
-/* .banner {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../Assets/Images/nature.jpg');
-  height: 20vh;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: rgb(180 180 180 / 80%) 0px 0px 10px 5px;
-} */
-
 .banner {
   height: 20vh;
   /* height: 190px; */
@@ -356,7 +342,6 @@ input, textarea {
 
 .enabled {
   color: black;
-  /* border: 2px solid rgba(0, 0, 0, 0); */
   transition: .3s;
 }
 
@@ -370,8 +355,6 @@ input, textarea {
 
 .button {
   width: 40%;
-  /* margin-top: 60px;
-  margin-bottom: 20px; */
   padding: 0.5rem 1rem;
   font-size: 1rem;
   background-color: #df691ab4;
@@ -395,13 +378,11 @@ input, textarea {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  /* outline: 1px solid; */
   max-width: 540px;
 }
 
 .linkInput {
   width: 100% !important;
-  /* outline: 1px solid red !important; */
 }
 
 .socialInputWrapper {
