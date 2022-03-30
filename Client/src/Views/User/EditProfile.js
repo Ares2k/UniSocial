@@ -1,16 +1,20 @@
-import Button from '../../Components/Button/Button';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useNavigate, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import style from './editProfile.module.css';
-import Popup from '../../Components/Popup/Popup';
-import { FiEdit } from 'react-icons/fi';
-import anonImg from '../../Assets/Images/anon.jpg';
-import { BsFillCameraFill } from 'react-icons/bs';
+import ProfilePicture from "../../Components/ProfilePicture/ProfilePicture";
+import { AiOutlineLink } from 'react-icons/ai';
+import { MdOutlineSportsEsports } from 'react-icons/md';
+import SocialCard from "../../Components/Socials/SocialCard";
+import LinkHeader from "../../Components/LinkHeaders/LinkHeader";
+import { BiCheckCircle, BiPlusCircle } from 'react-icons/bi';
+import { notifyLogin, notifyRegister } from "../../Helpers/toastNotify";
+import Popup from "../../Components/Popup/Popup";
+import InputBox from "../../Components/Input/InputBox";
+import { FiEdit } from "react-icons/fi";
+import Button from "../../Components/Button/Button";
+import { BsFillCameraFill } from "react-icons/bs";
 
 const EditProfile = () => {
-  const [hobbyPopup, setHobbyPopup] = useState(false);
-  const [allowInput, setAllowInput] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [profile, setProfile] = useState({
     username: '',
     firstname: '',
@@ -22,15 +26,157 @@ const EditProfile = () => {
       year: ''
     },
     bio: '',
-    filename: ''
+    filename: '',
+    banner: '',
+    socials: []
   });
-  const [error, setError] = useState(profile);
+  const [links, setLinks] = useState([
+    { id: "links", title: "Socials", icon: <AiOutlineLink /> },
+    { id: "interests", title: "Interests", icon: <MdOutlineSportsEsports /> }
+  ]);
+  const [error, setError] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [selected, setSelected] = useState('links');
+  const [hobbyPopup, setHobbyPopup] = useState(false);
+  const [allowInput, setAllowInput] = useState();
+  const [addedInput, setAddedInput] = useState(false);
+  const [socialLink, setSocialLink] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
   let inputClass = allowInput ? style.enabled : style.disabled;
+  let counter = 0;
+
+  useEffect(() => {
+    document.title = 'Edit Profile';
+    let isMounted = true;
+
+    fetch('http://192.168.0.74:5000/api/profile', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === 200) {
+          const user = res.user;
+          const course = res.user.course;
+          const hobbies = res.user.hobbies;
+
+          // Construct profile object
+          const profileObj = {
+            username: user.username,
+            firstname: user.firstname,
+            surname: user.surname,
+            email: user.email,
+            course: {
+              code: course?.code || '',
+              name: course?.name || '',
+              year: course?.year
+            },
+            hobbies,
+            bio: user.bio,
+            filename: user.filename,
+            banner: user.banner,
+            socials: user.socials
+          };
+
+          if (isMounted) {
+            setProfile(profileObj);
+          }
+        } else {
+          localStorage.removeItem('token');
+          return isMounted ? setToken(null) : null;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    if (location?.state?.from?.pathname === '/login') {
+      notifyLogin();
+    }
+
+    if (location?.state?.from?.pathname === '/register') {
+      notifyRegister();
+    }
+
+    window.history.replaceState({}, document.title);
+
+    return () => isMounted = false;
+  }, [navigate])
+
+  const setActive = e => {
+    setSelected(e.currentTarget.id);
+
+    if (e.currentTarget.id === 'interests') {
+      setHobbyPopup(true);
+    }
+  }
+
+  const handleChange = (e) => {
+    const field = e.target.id
+    const value = e.target.value;
+    let course = { ...profile.course }
+
+    value ?
+      setError({
+        ...error,
+        [e.target.id + "Err"]: ""
+      }) : setError({
+        ...error,
+        [e.target.id + "Err"]: `${e.target.placeholder} required`
+      })
+
+    if (field === 'code' || field === 'name' || field === 'year') {
+      if (field === 'year')
+        course[field] = parseInt(value);
+      else
+        course[field] = value;
+
+      setProfile({
+        ...profile,
+        course
+      });
+      return;
+    }
+
+    setProfile({
+      ...profile,
+      [field]: value,
+    });
+  }
+
+  const editBtnClick = () => setAllowInput(!allowInput);
+
+  const handleSocialInput = (e) => {
+    setSocialLink({
+      ...socialLink,
+      [e.target.id]: e.target.value,
+    })
+  }
+
+  const addSocialToProfile = () => {    
+    const socialArr = profile?.socials;
+
+    if (socialLink?.title || socialLink?.link) {
+      socialArr.push(socialLink);
+      setProfile({
+        ...profile,
+        socials: [...socialArr]
+      })
+    }
+
+    setSocialLink(null);
+  }
 
   const updateProfile = async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://192.168.0.74:5000/api/profile', {
+
+    console.log(profile)
+
+    await fetch('http://192.168.0.74:5000/api/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -47,61 +193,14 @@ const EditProfile = () => {
     window.location.reload();
   }
 
-  // const handleChange = (e) => {
-  //   setInput({
-  //     ...input,
-  //     [e.target.id]: e.target.value
-  //   });
+  const fileSelected = async (e) => {
+    let image = e.target.files[0];
+    const formData = new FormData();
 
-    // e.target.value ? 
-    //   setError({
-    //     ...error,
-    //     [e.target.id + "Err"]: ""
-    //   }) : setError({
-    //     ...error,
-    //     [e.target.id + "Err"]: `${e.target.placeholder} required`
-    //   })
-  // }
-
-  const handleChange = (e) => {
-    const field = e.target.name
-    const value = e.target.value;
-    let course = {...profile.course}
-
-    value ? 
-      setError({
-        ...error,
-        [e.target.id + "Err"]: ""
-      }) : setError({
-        ...error,
-        [e.target.id + "Err"]: `${e.target.placeholder} required`
-      }) 
-
-    if(field === 'code' || field === 'name' || field === 'year') {
-      if(field === 'year') 
-        course[field] = parseInt(value);
-      else
-        course[field] = value;
-
-      setProfile({
-        ...profile,
-        course
-      });
-      return;
+    if (e.target.id === 'bannerUpload') {
+      formData.append("banner", true);
     }
 
-    setProfile({
-      ...profile,
-      [field]: value,
-    });  
-  }
-
-  const editBtnClick = () => setAllowInput(!allowInput);
-
-  const fileSelected = async (e) => {
-    const image = e.target.files[0];
-
-    const formData = new FormData();
     formData.append("image", image);
 
     await fetch('http://192.168.0.74:5000/api/images', {
@@ -113,201 +212,120 @@ const EditProfile = () => {
     });
 
     window.location.reload();
-
-    // setFile(image);
   }
 
-  useEffect(() => {
-    let isMounted = true;
-
-    fetch('http://192.168.0.74:5000/api/profile', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(res => res.json())
-    .then(res => {
-      if(res.status === 200) {
-        const user = res.user;
-        const course = res.user.course;
-        const hobbies = res.user.hobbies;
-
-        // Construct profile object
-        const profileObj = {
-          username: user.username,
-          firstname: user.firstname,
-          surname: user.surname,
-          email: user.email,
-          course: {
-            code: course?.code || '',
-            name: course?.name || '',
-            year: course?.year
-          },
-          hobbies,
-          bio: user.bio,
-          filename: user.filename
-        };
-
-        return isMounted ? (
-          setProfile(profileObj)
-        ) : null;
-      } else {
-        localStorage.removeItem('token');
-        return isMounted ? setToken(null) : null;
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
-
-    return () => isMounted = false;
-  }, [navigate])
-
-  // Only render the page if a valid token exists
   return token ? (
-    <div className={style.mainWrapper}>
-      <div className={style.profileCard}>
-        <div className={style.header}>
-          { !allowInput &&
-            (<FiEdit
-              className={`${style.editIcon} ${style.headerWrapper}`}
-              onClick={editBtnClick}
-            />)
-          }
-          <h1 className={style.headerWrapper}>Your Profile</h1>
-        </div>
+    <div className={style.container}>
+      <div
+        className={style.banner}
+        style={{
+          backgroundImage:
+            profile.banner ? `linear-gradient(rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)),
+            url(/api/images/${profile?.banner}) ` : `linear-gradient(rgb(255 255 255 / 50%),
+            rgba(0, 0, 0, 0.5))`
+        }}
+      >
 
-        <div className={style.profileImageHolder}>
-          <div className={style.imageBorder}>
-            { profile.filename ? 
-              <img
-                src={`/api/images/${profile.filename}`}
-                alt=""
-                className={style.profileImg}
-              />
-              :
-              <img
-                src={anonImg}
-                alt=""
-                className={style.profileImg}
-              />
-            }
-          </div>
-          
-          <label htmlFor='fileUpload' className={style.fileLabel}>
-            <BsFillCameraFill
-              className={style.cameraIcon}
-            />
-          </label>
-          <input
-            id='fileUpload'
-            type='file'
-            accept='image/png, image/jpeg'
-            onChange={fileSelected}
+        <label htmlFor='bannerUpload' className={style.coverPhoto}>
+          <BsFillCameraFill
+            style={{width: "20px", height: "20px", marginRight: "10px"}}
           />
-        </div>
-        
-        <div className={style.signupDetails}>
-          <div className={style.field}>
-            <label>Username</label>
-            <input
-              id='username'
-              className={style.username}
-              name='username'
-              value={ profile?.username }
-              disabled={true}
-              style={{cursor: "not-allowed"}}
-            />
-          </div>
+          Add Cover Photo
+        </label>
+        <input
+          id='bannerUpload'
+          type='file'
+          accept='image/png, image/jpeg'
+          onChange={fileSelected}
+        />
+      </div>
 
-          <div className={style.field}>
-            <label>Email</label>
-            <input
-              id='email'
-              name='email'
-              value={ profile?.email }
-              placeholder='Email'
-              type='email'
-              autoComplete='off'
-              onChange={handleChange}
-              className={style.disabled}
-              disabled={true}
-              style={{cursor: "not-allowed"}}
-            />
-          </div>
+      <div className={style.imagePlacer}>
+        <ProfilePicture
+          filename={profile.filename}
+          imageContainer={style.profilePic}
+        />
+
+        <label htmlFor='fileUpload' className={style.fileLabel}>
+          <BsFillCameraFill
+            className={style.cameraIcon}
+          />
+        </label>
+        <input
+          id='fileUpload'
+          type='file'
+          accept='image/png, image/jpeg'
+          onChange={fileSelected}
+        />
+      </div>
+
+      <FiEdit
+        size={"35px"}
+        className={`${style.editIcon} ${style.headerWrapper}`}
+        onClick={editBtnClick}
+      />
+
+      <div className={style.info}>
+        <div className={style.bio}>
+          <h2>@{profile.username}</h2>
         </div>
 
+        <h1 style={{display: "flex"}}>Personal Details</h1>
         <div className={style.fullname}>
-          <div className={style.field}>
-            <label>First Name</label>
-            <input
-              id='firstname'
-              name='firstname'
-              value={ profile?.firstname }
-              placeholder='First name'
-              type='text'
-              autoComplete='off'
-              onChange={ handleChange }
-              className={ inputClass }
-              disabled={ allowInput ? false : true }
-            />
-          </div>
-
-          <div className={style.field}>
-            <label>Surname</label>
-            <input
-              id='surname'
-              name='surname'
-              value={ profile?.surname }
-              placeholder='Surname'
-              type='text'
-              autoComplete='off'
-              onChange={ handleChange }
-              className={ inputClass }
-              disabled={ allowInput ? false : true }
-            />
-          </div>
-        </div>
-        
-        <div className={style.field}>
-          <label>Course Name</label>
-          <input
-            id='courseName'
-            name='name'
-            value={ profile?.course?.name }
-            placeholder='Course Name'
-            type='text'
-            autoComplete='off'
-            onChange={ handleChange }
+          <InputBox
+            id="firstname"
+            label="First Name"
+            overrideStyle={style.name}
+            val={ profile.firstname }
+            onChange = { handleChange }
+            allowInput={ allowInput }
             className={ inputClass }
-            disabled={ allowInput ? false : true }
+          />
+
+          <InputBox
+            id="surname"
+            label="Surname"
+            overrideStyle={style.name}
+            val={ profile.surname }
+            onChange = { handleChange }
+            allowInput={ allowInput }
+            className={ inputClass }
           />
         </div>
-        
-        <div className={style.field}>
-          <label>Course Code & Year</label>
-          <div className={style.courseDetails}>
-            <input
-              id='courseCode'
-              name='code'
-              value={ profile?.course?.code }
-              placeholder='Course Code'
-              type='text'
-              autoComplete='off'
-              onChange={ handleChange }
-              className={ inputClass }
-              disabled={ allowInput ? false : true }
-            />
 
+        <h1 style={{ display: "flex"}}>Education</h1>
+        <div className={style.courseDetails}>
+          <InputBox
+            id="name"
+            label="Course Name"
+            overrideStyle={style.courseName}
+            val={ profile.course.name }
+            onChange={ handleChange }
+            allowInput={ allowInput }
+            className={ inputClass }
+          />
+          
+          <InputBox
+            id="code"
+            label="Course Code"
+            overrideStyle={style.courseCode}
+            val={ profile.course.code }
+            onChange={ handleChange }
+            allowInput={ allowInput }
+            className={ inputClass }
+          />
+
+          <div className={style.selectBox}>
+            <p>Year</p>
             <select
-              id='courseYear'
+              id='year'
               name='year'
-              value={ profile?.course?.year }
-              onChange = { handleChange }
-              className={ inputClass }
-              disabled={ allowInput ? false : true }>
+              value={profile?.course?.year}
+              onChange={handleChange}
+              disabled={allowInput ? false : true}
+              className={ style }
+            >
 
               <option value='1'>1</option>
               <option value='2'>2</option>
@@ -318,8 +336,8 @@ const EditProfile = () => {
           </div>
         </div>
 
-        <div className={style.field}>
-          <label>Say something about yourself</label>
+        <div className={style.bio}>
+          <h1>Bio</h1>
           <textarea
             id='bio'
             name='bio'
@@ -328,38 +346,117 @@ const EditProfile = () => {
             type='text'
             autoComplete='off'
             onChange={ handleChange }
-            className={ inputClass }
             disabled={ allowInput ? false : true }
+            className={ inputClass }
           />
         </div>
 
-        <div className={style.buttonHolder}>
-          <Button
-            label='Hobbies'
-            onClick={() => allowInput && setHobbyPopup(true)}
-            className={style.button}
-            style={ allowInput ? {cursor: "pointer"} : {cursor: "not-allowed"}}
-          />
+        {links &&
+        <div className={style.links}>
 
+          {links.map(link => (
+            <LinkHeader
+              key={link.id}
+              id={link.id}
+              selected={selected}
+              onClick={allowInput && setActive}
+              icon={link.icon}
+              title={link.title}
+            />
+          ))}
+        </div>}
+
+        {selected === 'interests' &&
+          hobbyPopup &&
+          allowInput &&
+          <Popup
+            trigger={hobbyPopup}
+            setTrigger={setHobbyPopup}
+            profile={profile}
+            setProfile={setProfile}
+            setSelected={setSelected}
+          />
+        }
+
+        {selected === 'links' &&
+          <div>
+            {profile?.socials?.length > 0 && profile.socials.map(social => (
+              <a
+                href={`//${social.link}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={counter}
+                style={{textDecoration: "none", color: "inherit"}}
+              >
+
+                <SocialCard
+                  key={counter++}
+                  image={social.image}
+                  title={social.title}
+                  description={social.link}
+                  />
+              </a>
+            ))}
+
+            {addedInput &&
+              <div className={style.socialInputWrapper}>
+                <InputBox
+                  id="title"
+                  label="title"
+                  title="Add a title"
+                  allowInput={true}
+                  overrideStyle={style?.linkInput}
+                  onChange={handleSocialInput}
+                  value={socialLink?.title}
+                />
+
+                <InputBox
+                  id="link"
+                  label="social media link"
+                  title="Add your social media"
+                  allowInput={true}
+                  overrideStyle={style?.linkInput}
+                  onChange={handleSocialInput}
+                  value={socialLink?.link}
+                />
+              </div>}
+            
+            {true &&
+              <div onClick={() => setAddedInput(!addedInput)} style={{width: "40px", margin: "0 auto"}}>
+                {allowInput &&
+                !addedInput ? 
+                  <SocialCard
+                    overrideStyle={style.addMore}
+                    icon={<BiPlusCircle style={{ width: "40px", height: "40px" }} />}
+                  /> : 
+
+                  allowInput &&
+                  <SocialCard
+                          overrideStyle={style.addMore}
+                          icon={<BiCheckCircle style={{ width: "40px", height: "40px" }} />}
+                          onClick={addSocialToProfile}
+                  />
+                }
+              </div>}
+          </div>
+        }
+
+        <div className={style.buttons}>
           <Button
-            label='Save Changes'
-            onClick={ allowInput && updateProfile }
+            label="Cancel"
             className={style.button}
-            style={ allowInput ? {cursor: "pointer"} : {cursor: "not-allowed"}}
+            onClick={() => navigate('/mutual')}
+          />
+          <Button 
+            label="Save changes"
+            className={style.button}
+            onClick={ allowInput && updateProfile }
+            style={allowInput ? { cursor: "pointer" } : { cursor: "not-allowed" }}
           />
         </div>
       </div>
-
-      { hobbyPopup &&
-        <Popup
-          trigger={ hobbyPopup }
-          setTrigger={ setHobbyPopup }
-          profile={ profile }
-          setProfile={ setProfile }
-        />
-      }
     </div>
-  ) : <Navigate to="/login"/>;
+  ) : <Navigate to="/login" />;
 }
- 
+
 export default EditProfile;

@@ -1,82 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@100&display=swap');
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 
-.mainWrapper {
-  border: 1px solid transparent;
-  background-position: -50px 100%;
-  background-size: 100%;
-  background-image: url('../../Assets/Images/students.svg');
+html {
+  overflow-y: scroll;
+}
+
+.container {
+  margin: 30px auto;
+  max-width: 700px;
+  width: calc(100% - 20px);
+  border-radius: 5px;
+  box-shadow: rgb(180 180 180 / 50%) 0px 0px 15px 1px;
+  display: inline-block;
+
+  /* CAN REMOVE IF THERE ARE ISSUES WITH LOTS OF INFO */
+  overflow: hidden;
+}
+
+/* .banner {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../Assets/Images/nature.jpg');
+  height: 20vh;
+  background-position: center;
   background-repeat: no-repeat;
-  background-color: white;
-  height: auto;
-}
-
-.profileCard {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-  width: 90%;
-  margin: 0px auto;
-  box-shadow: 0px 0px 19px 5px rgba(0, 0, 0, 0.19);
-  background-color: #efefef;
-  border-radius: 10px;
-  margin-bottom: 200px;
+  background-size: cover;
   position: relative;
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: rgb(180 180 180 / 80%) 0px 0px 10px 5px;
+} */
 
-.changePic {
-  margin: 10px 0;
-  font-weight: bold;
-}
-
-.header {
+.banner {
+  height: 20vh;
+  /* height: 190px; */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  /* align-items: center; */
+  box-shadow: rgb(180 180 180 / 80%) 0px 0px 10px 5px;
   width: 100%;
 }
 
-.editIcon {
-  position: absolute;
-  left: 15px;
-  top: 15px;
-  width: 30px;
-  height: 30px;
+.banner p {
+  color: white;
+  font-size: 2rem;
 }
 
-.headerWrapper {
+.profilePic {
   display: inline-block;
-}
-
-.profileImageHolder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 60%;
-  position: relative;
-}
-
-.imageBorder {
-  display: inline-block;
-  position: relative;
-  width: 140px;
-  height: 140px;
-  overflow: hidden; 
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
   border-radius: 50%;
-  margin-bottom: 30px;
-  border: 3px solid;
+  border: 3px solid white;
 }
 
-.profileImg {
+.image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.imagePlacer {
+  margin-left: 20px;
+  position: absolute;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  top: 25vh;
+}
+
 .cameraIcon {
   width: 100%;
   height: 100%;
-  color: gray;
+  color: black;
   padding: 5px;
-  background-color: #efefef;
+  background-color: #e4e6eb;
+}
+
+.coverPhoto {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  /* width: 25%; */
+  background-color: white;
+  float: right;
+  border-radius: 5px;
+  padding: 5px;
+  font-weight: bold;
+  margin-right: 15px;
+  margin-top: 15vh;
 }
 
 input[type='file'] {
@@ -87,28 +105,236 @@ input[type='file'] {
   width: 35px;
   border-radius: 50%;
   height: 35px;
-  margin-left: 110px;
-  margin-top: 60px;
+  margin-left: 85px;
+  margin-top: 80px;
   position: absolute;
   overflow: hidden;
 }
 
-.field {
+h1 {
+  font-size: 1.3rem;
+  margin: 5px 0;
+}
+
+.bio h2 {
+  font-size: 1.3rem;
+  color: #b8b8b8;
+  font-weight: bold;
+}
+
+.info {
+  margin-top: 80px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.bio {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
-  width: 85%;
-  margin: 15px 0;
-}
-
-.field label {
-  font-family: 'Fira Sans', serif;
-  margin: 10px 0;
-}
-
-.field textarea {
   width: 100%;
-  height: 90px;
+  text-align: left;
+  margin: 30px 0;
+}
+
+.bio h3 {
+  color: black;
+  text-align: justify;
+  padding: 0px 10px;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.bio p {
+  padding: 10px 10px;
+  text-align: justify;
+  line-height: 25px;
+}
+
+.bio:first-child p {
+  border: 1px solid #b8b8b8;
+  border-radius: 10px;
+  width: 100%;
+  background-color: rgba(248, 248, 248, 0.301);
+}
+
+.courseInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  margin-top: 10px;
+
+  padding: 10px 10px;
+  text-align: justify;
+  line-height: 25px;
+}
+
+.courseHeaders .courseInfo {
+  border-bottom: 1px solid;
+}
+
+.courseHeaders {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.course {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.links {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 70px 0;
+  color: #b8b8b8;
+  padding: 0 10px;
+}
+
+.socials {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: auto;
+}
+
+.links svg {
+  height: 25px;
+  width: 25px;
+}
+
+.socials span {
+  margin: 0 5px;
+}
+
+.socialCard {
+  display: flex;
+  margin: 20px auto;
+  border: 1px solid #df691a;
+  max-width: 540px;
+  width: calc(100% - 20px);
+  border-radius: 10px;
+  padding: 3px;
+  background-color: rgba(248, 248, 248, 0.767);
+  box-shadow: rgb(180 180 180 / 40%) 0px 0px 5px 1px;
+  cursor: pointer;
+}
+
+.addMore {
+  justify-content: center;
+}
+
+.socialIcons {
+  height: 60px;
+  width: 60px;
+}
+
+.socialDesc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0px 10px;
+}
+
+/* When user clicks an item */
+/* Make it display data relating to item */
+.selected {
+  color: black;
+  border-bottom: 1.5px solid;
+}
+
+/* user has an interest in under 'all' section */
+.allHobbies > p {
+  font-size: 1.3rem;
+}
+
+.hobbies {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 30px auto;
+  width: 100%;
+}
+
+.hobbyBubble {
+  display: flex;
+  align-items: center;
+  margin: 10px 8px;
+  border-radius: 7px;
+  padding: 10px 15px;
+  font-weight: bold;
+  font-size: 1rem;
+  background-color: rgb(255, 191, 13);
+}
+
+.bio textarea {
+  border: 1px solid #dbdbdb;
+  border-radius: 5px;
+  width: 100%;
+  height: 10vh;
+  background-color: rgba(248, 248, 248, 0.301);
+  font-size: .9rem;
+}
+
+.name {
+  width: 48% !important;
+}
+
+.fullname {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.input {
+  width: 50% !important;
+}
+
+.courseDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.courseName {
+  width: 50% !important;
+}
+
+.courseCode {
+  width: 35% !important;
+}
+
+select {
+  text-align: center;
+  /* width: 10% !important; */
+  height: 3vh;
+  width: 100% !important;
+}
+
+.selectBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 10%;
+}
+
+.selectBox > p {
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+  color: #787878;
 }
 
 input, textarea {
@@ -117,331 +343,112 @@ input, textarea {
   outline: none;
   border: 2px solid rgba(0, 0, 0, 0);
   background-color: white;
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: .3s;
   border-radius: 7px;
   resize: none;
 }
 
+.editIcon {
+  float: right;
+  margin: 10px 10px;
+}
+
 .enabled {
   color: black;
-  border: 2px solid rgba(0, 0, 0, 0);
+  /* border: 2px solid rgba(0, 0, 0, 0); */
   transition: .3s;
 }
 
 .enabled:focus {
   background-color: #fff;
-  border-color: #f1b287;
-  box-shadow: 0 0 0 0.2rem rgb(223 105 26 / 25%);
 }
 
 .disabled {
-  color: #cbcbcb; /* Grayed cus editing disabled by default */
-}
-
-.profileCard h1 {
-  margin: 20px 0;
-  font-size: 1.2rem;
-  font-family: 'Fira Sans', serif;
-}
-
-.username {
-  background-color: white;
   color: #cbcbcb;
 }
 
-.courseDetails {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-/* Input for course code */
-.courseDetails input {
-  width: 70%;
-}
-
-.courseDetails select {
-  width: 20%;
-  text-align: center;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 7px;
-  outline: none;
-}
-
-.courseDetails select option:hover {
-  color: #df691a;
-}
-
 .button {
-  width: 42%;
+  width: 40%;
+  /* margin-top: 60px;
+  margin-bottom: 20px; */
   padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  background-color: #bd4f6c;
-  background-image: linear-gradient(326deg, #bd4f6c 0%, #d7816a 74%);
+  font-size: 1rem;
+  background-color: #df691ab4;
   cursor: pointer;
   outline: none;
   border: none;  
   transition: .3s;
-  border-radius: 7px;
+  border-radius: 5px;
   float: left;
   color: white;
+  font-weight: bold;
 }
 
 .button:hover {
   background-color: rgb(207, 129, 77);
 }
 
-.buttonHolder {
+.buttons {
+  margin: 50px auto;
+  margin-top: 50px;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
   justify-content: space-between;
-  width: 85%;
-  margin: 20px 0;
+  flex-direction: row;
+  /* outline: 1px solid; */
+  max-width: 540px;
 }
 
-.fullname, .signupDetails {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+.linkInput {
+  width: 100% !important;
+  /* outline: 1px solid red !important; */
 }
 
-/* Anything above 768px */
-@media (min-width: 768px) {
-  .profileCard {
-    width: 80%;
-  }
-
-  .imageBorder {
-    width: 120px;
-    height: 120px;
-  }
-
-  .fileLabel {
-    width: 35px;
-    height: 35px;
-    margin-left: 95px;
-    margin-top: 40px;
-  }
-
-  .profileCard h1 {
-    font-size: 1.8rem;
-  }
-
-  .changePic {
-    font-size: 1.2rem;
-  }
-
-  .field label {
-    font-size: 1.4rem;
-  }
-
-  input, textarea {
-    font-size: 1.2rem;
-  }
-
-  .editIcon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .button {
-    font-size: 1.2rem;
-  }
-
-  .courseDetails select {
-    width: 14%;
-    text-align: center;
-    font-size: 1.2rem;
-  }
-
-  .mainWrapper {
-    background-position: 0% 110%;
-    background-size: 500px 500px;
-  }
+.socialInputWrapper {
+  max-width: 540px;
+  margin: 0 auto;
+  margin-bottom: 20px;
 }
 
-@media (min-width: 1024px) {
-  .profileCard {
-    width: 70%;
-  }
-
-  .profileCard h1 {
-    font-size: 1.9rem;
-  }
-
-  .changePic {
-    font-size: 1.2rem;
-  }
-
-  .field label {
-    font-size: 1.2rem;
-    float: left;
-    margin: 0;
-  }
-
-  input, textarea {
-    font-size: 1rem;
+@media screen and (max-width: 500px) {
+  .links {
+    padding: 0;
   }
 
   .fullname {
-    flex-direction: row;
-    width: 85%;
+    flex-direction: column;
   }
 
-  .fullname .field input {
-    width: 90%;
-    float: left;
+  .name {
+    width: 100% !important;
+    margin-bottom: 40px !important;
   }
 
-  .fullname .field:nth-child(2n) {
-    align-items: flex-end;
+  .courseDetails {
+    flex-direction: column;
   }
 
-  .fullname .field:nth-child(2) input {
-    width: 100%
+  .courseName {
+    width: 100% !important;
   }
 
-  .fullname .field {
-    display: inline;
+  .courseCode {
+    width: 100% !important;
   }
 
-  .fullname div:nth-child(2) input {
-    float: right;
-    margin: 0;
-  }
-}
-
-@media (min-width: 1440px) {
-  .profileCard {
-    width: 40%;
+  select {
+    width: 20% !important; 
+    margin: 10px 0;
+    height: 4vh;
   }
 
-  .imageBorder {
-    height: 140px;
-    width: 140px;
+  .selectBox > p {
+    margin-bottom: 0px;
   }
 
-  .fileLabel {
-    /* outline: 1px solid; */
-    width: 35px;
-    border-radius: 50%;
-    height: 35px;
-    margin-left: 100px;
-    margin-top: 60px;
-    position: absolute;
-    overflow: hidden;
-  }
-
-  .profileImg {
+  .selectBox {
+    margin: 20px 0;
     width: 100%;
-  }
-
-  .profileCard h1 {
-    font-size: 1.4rem;
-  }
-
-  .changePic {
-    font-size: 1.1rem;
-  }
-
-  .field {
-    margin: 16px 0;
-  }
-
-  .field label {
-    font-size: 1.2rem;
-    float: left;
-    margin: 0;
-  }
-
-  input, textarea {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .editIcon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .button {
-    font-size: 1.2rem;
-  }
-
-  .courseDetails select {
-    width: 14%;
-    text-align: center;
-    font-size: 1.2rem;
-  }
-
-  .fullname {
-    flex-direction: row;
-    width: 85%;
-  }
-
-  .fullname .field input {
-    width: 90%;
-    float: left;
-  }
-
-  .fullname .field:nth-child(2n) {
-    align-items: flex-end;
-  }
-
-  .fullname .field:nth-child(2) input {
-    width: 100%;
-  }
-
-  .fullname .field {
-    display: inline;
-  }
-
-  .fullname div:nth-child(2) input {
-    float: right;
-    margin: 0;
-  }
-
-  .mainWrapper {
-    background-position: bottom;
-    background-size: 100%;
-    background-image: url('../../Assets/Images/blue-wave.svg');
-    background-repeat: no-repeat;
-    background-color: white;
-    height: auto;
-    border: none;
-  }
-
-  .signupDetails {
-    flex-direction: row;
-    width: 85%;
-  }
-
-  .signupDetails .field input {
-    width: 90%;
-    float: left;
-  }
-
-  .signupDetails .field:nth-child(2n) {
-    align-items: flex-end;
-  }
-
-  .signupDetails .field:nth-child(2) input {
-    width: 100%;
-  }
-
-  .signupDetails .field {
-    display: inline;
-  }
-
-  .signupDetails div:nth-child(2) input {
-    float: right;
-    margin: 0;
+    padding: 0 20px;
   }
 }
