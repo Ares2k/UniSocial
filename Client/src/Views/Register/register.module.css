@@ -19,10 +19,8 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  /* height: 100%; */
   height: auto;
   padding: 20px 100px; /* Padding that corresponds to edges of the screen */
-  /* min-height: 90vh; */
 }
 
 .container::after {
@@ -40,7 +38,7 @@ body {
 /* Box that contains image and input fields */
 .registrationBox {
   margin: 20px 0;
-  max-width: 1200px;
+  width: 70%;
   height: auto;
   display: grid;
   grid-template-columns: repeat(2, 2fr);
@@ -57,10 +55,11 @@ body {
 
 .right {
   padding: 25px 40px;
-  background-color: #e9ecef;
+  background-color: white;
   margin-left: 3vw;
   box-shadow: 0px 0px 19px 5px rgba(0, 0, 0, 0.19);
-  border-radius: 20px;
+  border-radius: 5px;
+  width: 100%;
 }
 
 .p::after {
@@ -87,23 +86,19 @@ body {
 .field {
   width: 100%;
   padding: 0.5rem 1rem;
-  outline: none;
-  border: 2px solid rgba(0, 0, 0, 0);
+  border: 1px solid #dbdbdb;
   background-color: white;
   font-size: 1.1rem;
-  /* margin-bottom: 22px; */
   margin: 5px 0;
   transition: .3s;
-  border-radius: 7px;
+  border-radius: 5px;
 }
 
 .errMsg {
   color: red;
   text-align: left;
   font-size: 1rem;
-  /* outline: 1px solid; */
   margin-bottom: 15px;
-  /* outline: 1px solid red; */
 }
 
 .inputSection {
@@ -111,7 +106,6 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  /* outline: 1px solid; */
 }
 
 .field:focus {
@@ -132,8 +126,6 @@ body {
   border-radius: 7px;
   float: left;
   color: white;
-  /* margin-top: 20px; */
-  /* outline: 1px solid blue; */
 }
 
 .button:hover {
@@ -145,7 +137,6 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  /* outline: 1px solid; */
 }
 
 .alreadyRegistered {
@@ -156,7 +147,6 @@ body {
 }
 
 .alreadyRegistered a {
-  /* font-weight: bold; */
   color: #df691ab4;
 }
 
@@ -210,6 +200,7 @@ body {
 @media screen and (max-width: 600px) {
   .registrationBox {
     grid-template-columns: 1fr;
+    width: 90%;
   }
 
   .right {
