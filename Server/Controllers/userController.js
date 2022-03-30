@@ -163,6 +163,7 @@ const getProfile = async (req, res) => {
       bio: user.bio,
       hobbies: user.hobbies,
       filename: user.filename,
+      banner: user.banner,
       socials: user.socials
     }});
   } catch (err) {
@@ -271,6 +272,7 @@ const mutualUser = async (req, res) => {
       bio: 1,
       course: 1,
       filename: 1,
+      banner: 1,
       socials: 1
     }
   ).lean();
@@ -300,14 +302,18 @@ const uploadImage = async (req, res) => {
   try {
     const file = req.file;
     const userID = req.user.id; 
+    let fieldToUpdate = "filename"
 
     const result = await uploadFile(file);    
     await unlinkFile(file.path);
     
+    if (req?.body?.banner)
+      fieldToUpdate = "banner";
+
     await User.updateOne(
-      {_id: userID},
-      {$set: {filename: file.filename}},
-      {upsert: true}
+      { _id: userID },
+      { $set: { [fieldToUpdate]: file.filename } },
+      { upsert: true }
     );
 
     res.json({ imagePath: `/images/${result.Key}` });
