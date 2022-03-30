@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema({
   bio       : { type: String },
   hobbies   : { type: Array, default: [] },
   filename  : { type: String },
+  banner    : { type: String },
   socials   : [ SocialLink ]
 }, {collection: 'users'});
 
