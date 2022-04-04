@@ -47,7 +47,6 @@ const App = () => {
             <Route path="/home" element={<Home />}/>
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
-            {/* <Route path='/signout' element={}/> */}
 
             <Route element={<ProtectedRoutes />}>
               <Route path='/profile/edit' element={<EditProfile />} />
