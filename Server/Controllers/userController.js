@@ -65,6 +65,7 @@ const register = async (req, res) => {
     return res.json({ status: 200, token: accessToken });
 
   } catch (err) {
+    console.log(err)
     if(err === 101) return res.json({status: 101, error: 'Username must be 5-20 chars in length'});
     if(err === 102) return res.json({status: 102, error: 'Invalid email'});
     if(err === 103) return res.json({status: 103, error: 'Invalid First Name'});
@@ -92,7 +93,6 @@ const login = async (req, res) => {
 
     console.log(`${user.username} has logged in.`);
 
-    // return res.status(200).json({accessToken});
     return res.json({ status: 200, token: accessToken });
   }
 
