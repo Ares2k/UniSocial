@@ -15,37 +15,49 @@ import ProtectedRoutes from './Routes/ProtectedRoutes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditProfile from './Views/User/EditProfile';
+import { createContext, useState } from 'react';
+
+export const NavbarContext = createContext({
+  navVal: "Profile",
+  setNavVal: () => {}
+});
 
 const App = () => {
+  const [navVal, setNavVal] = useState('Profile');
+  const value = { navVal, setNavVal };
+
   return (
     <Router>
       <div className="App">
-        <Navbar />
-        <ToastContainer
-          position="top-right"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss={false}
-          draggable
-          pauseOnHover={false}
-        />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />}/>
-          <Route path='/register' element={<Register />} />
-          <Route path='/login' element={<Login />} />
+        <NavbarContext.Provider value={value}>
+          <Navbar />
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss={false}
+            draggable
+            pauseOnHover={false}
+          />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />}/>
+            <Route path='/register' element={<Register />} />
+            <Route path='/login' element={<Login />} />
+            {/* <Route path='/signout' element={}/> */}
 
-          <Route element={<ProtectedRoutes />}>
-            <Route path='/profile/edit' element={<EditProfile />} />
-            <Route path='/mutual' element={<MutualUsers />} />
-          </Route>
+            <Route element={<ProtectedRoutes />}>
+              <Route path='/profile/edit' element={<EditProfile />} />
+              <Route path='/mutual' element={<MutualUsers />} />
+            </Route>
 
-          <Route path='/users/:id' element={<DisplayUser />} />
-          <Route path='*' element={<PageNotFound />} />
-        </Routes>
+            <Route path='/users/:id' element={<DisplayUser />} />
+            <Route path='*' element={<PageNotFound />} />
+          </Routes>
+        </NavbarContext.Provider>
       </div>
     </Router>
   );
