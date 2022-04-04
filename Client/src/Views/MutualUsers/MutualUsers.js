@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link, Navigate, useLocation } from "react-router-dom";
 import style from './mutual.module.css';
 import { notifyLogin, notifyRegister } from "../../Helpers/toastNotify";
@@ -8,18 +8,20 @@ import { FaGraduationCap, FaUniversity } from 'react-icons/fa';
 import { AiOutlineFieldNumber } from "react-icons/ai";
 import EducationInfo from "../../Components/Education/EducationInfo";
 import MutualEducation from "../../Components/Education/MutualEducation";
+import { NavbarContext } from "../../App";
 
 const MutualUsers = () => {
   const [users, setUsers] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const navigate = useNavigate();
   let location = useLocation();
+  const { setNavVal } = useContext(NavbarContext);
 
   useEffect(() => {
     document.title = 'Mutual Users';
     let isMounted = true;    
 
-    fetch('http://192.168.0.74:5000/api/mutual/', {
+    fetch('http://192.168.0.75:5000/api/mutual/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,6 +40,10 @@ const MutualUsers = () => {
     .catch(err => {
       console.log(err);
     })
+
+    if (isMounted) {
+      setNavVal(null);
+    }
 
     if(location?.state?.from?.pathname === '/login') {
       notifyLogin();
