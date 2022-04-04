@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   filename  : { type: String },
   banner    : { type: String },
   socials   : [ SocialLink ]
-}, {collection: 'users'});
+}, { collection: 'users' });
 
 const model = mongoose.model('UserSchema', UserSchema);
 
