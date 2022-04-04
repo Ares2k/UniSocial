@@ -167,10 +167,9 @@ html {
 
 .socialCard {
   display: flex;
-  margin: 20px auto;
   border: 1px solid #df691a;
   max-width: 540px;
-  width: calc(100%-20px);
+  width: calc(100% - 60px);
   border-radius: 10px;
   padding: 3px;
   background-color: rgba(248, 248, 248, 0.767);
@@ -223,6 +222,15 @@ html {
   font-weight: bold;
   font-size: 1rem;
   background-color: rgb(255, 191, 13);
+}
+
+.socialCardWrap {
+  margin: 20px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 600px;
+  width: calc(100%-20px);
 }
 
 @media screen and (max-width: 500px) {
