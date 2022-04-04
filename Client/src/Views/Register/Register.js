@@ -41,7 +41,7 @@ const Register = () => {
 
     if(validateInput(input)) {
       let isMounted = true;
-      let response = await fetch('http://192.168.0.74:5000/api/register', {
+      let response = await fetch('http://192.168.0.75:5000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -57,6 +57,15 @@ const Register = () => {
       });
 
       response = await response.json();
+      console.log(response)
+
+      if (response.status === 11000) {
+        localStorage.removeItem('token');
+
+        if (isMounted) {
+          setError({usernameErr: response.error});
+        }
+      }
 
       if (response.status !== 200) {
         localStorage.removeItem('token');
