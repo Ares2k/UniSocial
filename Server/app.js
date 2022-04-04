@@ -5,7 +5,6 @@ const dotenv = require('dotenv').config();
 const userRouter = require('./Routes/users');
 
 const app = express();
-const port = process.env.PORT || 5000;
 const db_url = process.env.MONGO_URL;
 
 mongoose.connect(db_url)
@@ -29,4 +28,4 @@ app.use((err, req, res, next) => {
     message: 'Route does not exist'});
 });
 
-app.listen(port);
+module.exports = app;
