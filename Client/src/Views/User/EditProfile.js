@@ -1,5 +1,5 @@
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import style from './editProfile.module.css';
 import ProfilePicture from "../../Components/ProfilePicture/ProfilePicture";
 import { AiOutlineLink } from 'react-icons/ai';
@@ -13,6 +13,7 @@ import InputBox from "../../Components/Input/InputBox";
 import { FiEdit } from "react-icons/fi";
 import Button from "../../Components/Button/Button";
 import { BsFillCameraFill } from "react-icons/bs";
+import { NavbarContext } from "../../App";
 
 const EditProfile = () => {
   const [profile, setProfile] = useState({
@@ -43,14 +44,16 @@ const EditProfile = () => {
   const [socialLink, setSocialLink] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
+  const { navVal, setNavVal } = useContext(NavbarContext);
   let inputClass = allowInput ? style.enabled : style.disabled;
   let counter = 0;
 
   useEffect(() => {
     document.title = 'Edit Profile';
     let isMounted = true;
+    setNavVal('Sign Out');
 
-    fetch('http://192.168.0.74:5000/api/profile', {
+    fetch('http://192.168.0.75:5000/api/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -176,7 +179,7 @@ const EditProfile = () => {
 
     console.log(profile)
 
-    await fetch('http://192.168.0.74:5000/api/profile', {
+    await fetch('http://192.168.0.75:5000/api/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -203,7 +206,7 @@ const EditProfile = () => {
 
     formData.append("image", image);
 
-    await fetch('http://192.168.0.74:5000/api/images', {
+    await fetch('http://192.168.0.75:5000/api/images', {
       method: 'PUT',
       headers: {
         'Authorization': 'Bearer ' + token
@@ -231,7 +234,7 @@ const EditProfile = () => {
           <BsFillCameraFill
             style={{width: "20px", height: "20px", marginRight: "10px"}}
           />
-          Add Cover Photo
+          Change Cover Photo
         </label>
         <input
           id='bannerUpload'
@@ -259,12 +262,13 @@ const EditProfile = () => {
           onChange={fileSelected}
         />
       </div>
-
+      
+      {!allowInput &&
       <FiEdit
         size={"35px"}
         className={`${style.editIcon} ${style.headerWrapper}`}
         onClick={editBtnClick}
-      />
+      />}
 
       <div className={style.info}>
         <div className={style.bio}>
@@ -381,21 +385,18 @@ const EditProfile = () => {
         {selected === 'links' &&
           <div>
             {profile?.socials?.length > 0 && profile.socials.map(social => (
-              <a
-                href={`//${social.link}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={counter}
-                style={{textDecoration: "none", color: "inherit"}}
-              >
-
-                <SocialCard
-                  key={counter++}
-                  image={social.image}
-                  title={social.title}
-                  description={social.link}
-                  />
-              </a>
+              <SocialCard
+                key={counter++}
+                counter={counter}
+                image={social.image}
+                title={social.title}
+                description={social.link}
+                onClick={() => window.open(`//${social.link}`, "_blank")}
+                binIcon={true}
+                setProfile={setProfile}
+                profile={profile}
+                allowInput={allowInput}
+              />
             ))}
 
             {addedInput &&
@@ -432,11 +433,10 @@ const EditProfile = () => {
 
                   allowInput &&
                   <SocialCard
-                          overrideStyle={style.addMore}
-                          icon={<BiCheckCircle style={{ width: "40px", height: "40px" }} />}
-                          onClick={addSocialToProfile}
-                  />
-                }
+                    overrideStyle={style.addMore}
+                    icon={<BiCheckCircle style={{ width: "40px", height: "40px" }} />}
+                    onClick={addSocialToProfile}
+                  />}
               </div>}
           </div>
         }
@@ -445,7 +445,8 @@ const EditProfile = () => {
           <Button
             label="Cancel"
             className={style.button}
-            onClick={() => navigate('/mutual')}
+            onClick={() => allowInput && window.location.reload()}
+            style={allowInput ? { cursor: "pointer" } : { cursor: "not-allowed" }}
           />
           <Button 
             label="Save changes"
