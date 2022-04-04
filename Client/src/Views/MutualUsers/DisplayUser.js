@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import style from './displayUser.module.css';
 import ProfilePicture from "../../Components/ProfilePicture/ProfilePicture";
 import { AiOutlineFieldNumber, AiOutlineLink } from 'react-icons/ai';
@@ -8,6 +8,7 @@ import { MdOutlineSportsEsports } from 'react-icons/md';
 import SocialCard from "../../Components/Socials/SocialCard";
 import LinkHeader from "../../Components/LinkHeaders/LinkHeader";
 import EducationInfo from "../../Components/Education/EducationInfo";
+import { NavbarContext } from "../../App";
 
 const DisplayUser = () => {
   const [user, setUser] = useState({
@@ -31,11 +32,12 @@ const DisplayUser = () => {
   const [mutual, setMutual] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
+  const { setNavVal } = useContext(NavbarContext);
   let counter = 0;
   
   useEffect(() => {
     let isMounted = true;
-    fetch(`http://192.168.0.74:5000/api/mutual/${id}`, {
+    fetch(`http://192.168.0.75:5000/api/mutual/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -54,6 +56,7 @@ const DisplayUser = () => {
         if (isMounted) {
           setUser(res.user);
           setMutual(res.mutualHobbies);
+          setNavVal(null);
         }
       } else if(res.status === 404) {
         setErrorMsg('User not found!')

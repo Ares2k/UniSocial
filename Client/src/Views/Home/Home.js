@@ -5,10 +5,24 @@ import peopleTalkingImg from '../../Assets/Images/people-talking.svg';
 import Button from '../../Components/Button/Button';
 import style from './home.module.css';
 import waveImg from '../../Assets/Images/wave-small.svg';
+import { useContext, useEffect } from 'react';
+import { NavbarContext } from '../../App';
 
 const Home = () => {
+  document.title = 'Welcome to UniSocial';
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+  const { setNavVal } = useContext(NavbarContext);
+  
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted) {
+      setNavVal(null);
+    }
+
+    return () => isMounted = false;
+  },[setNavVal])
 
   return (
     <>
