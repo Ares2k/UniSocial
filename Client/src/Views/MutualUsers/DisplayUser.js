@@ -202,8 +202,9 @@ const DisplayUser = () => {
               </div>
             </div>) : (
               <p style={{ fontSize: "1.3rem" }}>
-                <span style={{ color: "#df691a", fontWeight: "bold" }}>{user.username} </span>
-                has not yet configured their profile.
+                You and
+                <span style={{ color: "#df691a", fontWeight: "bold" }}> {user.firstname} </span>
+                don't share any mutual interests
               </p>
             ))
           }
@@ -226,8 +227,8 @@ const DisplayUser = () => {
               </div>
             </div> ) : (
             <p style={{fontSize: "1.3rem"}}>
-              <span style={{color: "#df691a", fontWeight: "bold"}}>{user.username} </span>
-              has not yet configured their profile.
+              <span style={{color: "#df691a", fontWeight: "bold"}}>{user.firstname} </span>
+              has not yet configured their interests.
             </p>
           ))
         }
