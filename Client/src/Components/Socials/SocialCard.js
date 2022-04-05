@@ -4,21 +4,33 @@ import linkedInImg from '../../Assets/Images/linkedin.svg';
 import facebookImg from '../../Assets/Images/facebook.svg';
 import twitterImg from '../../Assets/Images/twitter.svg';
 import webImg from '../../Assets/Images/web.svg';
+import tiktokImg from '../../Assets/Images/tiktok.svg';
+import youtubeImg from '../../Assets/Images/youtube.svg';
+import discordImg from '../../Assets/Images/discord.svg';
+
 import { ImBin } from 'react-icons/im';
 
 const SocialCard = (props) => {
   let image = '';
-  
-  if (props.description && props.description.toLowerCase().includes("instagram"))
-    image = instagramImg;
-  else if (props.description && props.description.toLowerCase().includes("linkedin"))
-    image = linkedInImg;
-  else if (props.description && props.description.toLowerCase().includes("facebook"))
-    image = facebookImg;
-  else if (props.description && props.description.toLowerCase().includes("twitter"))
-    image = twitterImg;
-  else
-    image = webImg;
+  let description = props?.description?.toLowerCase();
+  image = webImg;
+
+  if (props.description) {
+    if (description.includes("instagram"))
+      image = instagramImg;
+    else if (description.includes("linkedin"))
+      image = linkedInImg;
+    else if (description.includes("facebook"))
+      image = facebookImg;
+    else if (description.includes("twitter"))
+      image = twitterImg;
+    else if (description.includes("tiktok"))
+      image = tiktokImg;
+    else if (description.includes("youtube"))
+      image = youtubeImg;
+    else if (description.includes("discord"))
+      image = discordImg;
+  }
 
   const deleteSocial = () => {
     const idx = props.counter;
@@ -33,7 +45,7 @@ const SocialCard = (props) => {
   }
 
   return (
-    <div className={style.socialCardWrap}>
+    <div className={style.socialCardWrap} style={{ justifyContent: props.binIcon ? "space-between" : "center" }}>
       <div
         className={props.overrideStyle || style.socialCard}
         key={props.counter}
@@ -46,7 +58,7 @@ const SocialCard = (props) => {
         </div>
       </div>
 
-      {props.binIcon &&
+      {props.binIcon ?
         props.allowInput ?
           <ImBin
             style={{color: "red"}}
@@ -55,8 +67,7 @@ const SocialCard = (props) => {
         /> : <ImBin
           style={{ color: "gray" }}
           size={"25px"}
-        />
-      }
+        /> : ""}
     </div>
   );
 }
