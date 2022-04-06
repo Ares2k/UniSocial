@@ -11,6 +11,18 @@ A social platform built to help university students connect via mutual interests
 * Socket.io
 
 ## Installation
+#### Configure Environment Variables
+```
+PORT=
+MONGO_URL=
+TOKEN_SECRET=
+REFRESH_TOKEN=
+AWS_BUCKET=
+AWS_BUCKET_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+```
+
 #### Client
 ```
 cd Client
