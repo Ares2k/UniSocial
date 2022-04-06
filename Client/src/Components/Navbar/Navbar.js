@@ -23,7 +23,7 @@ const Navbar = () => {
           <ImUsers size={"30px"}/>
         </Link>
 
-        <Link className={navbar.iconLinks} to='#'>
+        <Link className={navbar.iconLinks} to='/chat'>
           <BsFillChatDotsFill size={"30px"}/>
         </Link>
 
@@ -38,7 +38,7 @@ const Navbar = () => {
 
       <div className={navbar.links}>
         <Link to="/mutual">Meet Students</Link>
-        <Link to="#">Chat</Link>
+        <Link to="/chat">Chat</Link>
         <Link
           to={!navVal && "/profile/edit"}
           onClick={navVal && logout}
