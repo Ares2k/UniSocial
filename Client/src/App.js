@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditProfile from './Views/User/EditProfile';
 import { createContext, useState } from 'react';
+import Chat from './Views/ChatDashboard/Chat';
 
 export const NavbarContext = createContext({
   navVal: "Profile",
@@ -51,6 +52,7 @@ const App = () => {
             <Route element={<ProtectedRoutes />}>
               <Route path='/profile/edit' element={<EditProfile />} />
               <Route path='/mutual' element={<MutualUsers />} />
+              <Route path='/chat' element={<Chat />}/>
             </Route>
 
             <Route path='/users/:id' element={<DisplayUser />} />

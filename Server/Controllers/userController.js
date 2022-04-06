@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/user');
 const Hobbies = require('../Models/hobbies');
-const HobbyCounter = require('../Models/hobbyCounter');
+const Conversation = require('../Models/conversations');
+const Message = require('../Models/message');
 const addUser = require('../Services/addUser');
 const { validateInput, validatePassword } = require('../Services/validate');
 const { uploadFile, getFileStream } = require('../Services/s3Bucket');
@@ -262,20 +263,12 @@ const mutualUsers = async (req, res) => {
 }
 
 const mutualUser = async (req, res) => {
-  const user = await User.findOne(
-    { username: req.params.id },
-    { username: 1,
-      email: 1,
-      firstname: 1,
-      surname: 1,
-      hobbies: 1,
-      bio: 1,
-      course: 1,
-      filename: 1,
-      banner: 1,
-      socials: 1
-    }
-  ).lean();
+  const userId = req.query.id;
+  const username = req.query.username;
+
+  const user = userId
+    ? await User.findById(userId, { password: 0 }).lean()
+    : await User.findOne({ username }, { password: 0 })
 
   if(!user) return res.json({status: 404, message: 'User not found'});
 
@@ -290,7 +283,7 @@ const mutualUser = async (req, res) => {
     }
   })
 
-  res.json({ status: 200, user: user, mutualHobbies });
+  res.json({ status: 200, user, mutualHobbies });
 }
 
 const getHobbies = async (req, res) => {
@@ -330,6 +323,57 @@ const getImage = async (req, res) => {
   readStream.pipe(res);
 }
 
+const conversations = async (req, res) => {
+  const newConversation = new Conversation({
+    members: [req.body.senderId, req.body.receiverId]
+  });
+
+  try {
+    const savedConversation = await newConversation.save();
+    res.json({ status: 200, savedConversation });
+  } catch (err) {
+    res.json({ status: 500, err });
+  }
+}
+
+const getConversation = async (req, res) => {
+  try {
+    const conversation = await Conversation.find({
+      members: { $in: [req.params.userId] }
+    })
+
+    if (!conversation.length > 0) return res.json({ status: 404, message: "Error conversation not found" });
+    console.log(conversation)
+
+    res.json({ status: 200, conversation });
+  } catch (err) {
+    res.json({ status: 500, err });
+  }
+}
+
+const sendMessage = async (req, res) => {
+  const { message } = req.body;
+  const newMessage = new Message(message);
+  
+  try {
+    const savedMessage = await newMessage.save();
+    res.json({ status: 200, savedMessage });
+  } catch (err) {
+    res.json({ status: 500, err });
+  }
+}
+
+const getMessage = async (req, res) => {
+  try {
+    const messages = await Message.find({
+      conversationId: req.params.conversationId
+    })
+    res.json({ status: 200, messages });
+  } catch (err) {
+    res.json({ status: 500, err });
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -343,5 +387,9 @@ module.exports = {
   getHobbies,
   populateHobbies,
   uploadImage,
-  getImage
+  getImage,
+  conversations,
+  getConversation,
+  sendMessage,
+  getMessage
 }
