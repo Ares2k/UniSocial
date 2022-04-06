@@ -37,7 +37,7 @@ const DisplayUser = () => {
   
   useEffect(() => {
     let isMounted = true;
-    fetch(`http://192.168.0.75:5000/api/mutual/${id}`, {
+    fetch(`http://192.168.0.75:5000/api/mutualUser/?username=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
