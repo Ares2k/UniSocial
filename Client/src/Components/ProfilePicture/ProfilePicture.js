@@ -12,6 +12,7 @@ const ProfilePicture = (props) => {
         src={filename}
         alt=""
         className={style.image}
+        onClick={props.onClick}
       />
     </div>
   );
