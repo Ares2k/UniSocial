@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv').config();
+const dotenv = require('dotenv').config({ path: '../.env' });
 const userRouter = require('./Routes/users');
 
 const app = express();
@@ -19,13 +19,15 @@ app.use('/api', userRouter);
 app.use((req, res, next) => {
   res.json({
     status: 404,
-    message: 'Route does not exist'});
+    message: 'Route does not exist'
+  });
 });
 
 app.use((err, req, res, next) => {
   res.json({
     status: err.status || 500,
-    message: 'Route does not exist'});
+    message: 'Route does not exist'
+  });
 });
 
 module.exports = app;
