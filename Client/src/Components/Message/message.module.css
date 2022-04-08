@@ -1,7 +1,9 @@
 .message {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   margin-top: 20px;
+  /* outline: 1px solid blue; */
 }
 
 .messageTop {
@@ -18,19 +20,24 @@
 
 .messageText {
   padding: 10px;
-  border-radius: 20px;
-  background-color: rgb(245, 241, 241);
+  border-radius: 10px;
+  background-color: #e1e1e188;
   color: black;
   max-width: 300px;
 }
 
-.messageBottom {
+.timestamp {
   font-size: 12px;
-  margin-top: 10px;
+  margin-top: 5px;
+  display: inline-block;
 }
 
 .messageOwn {
+  display: flex;
+  flex-direction: column;
   align-items: flex-end;
+  margin-top: 20px;
+  /* outline: 1px solid blue; */
 }
 
 .messageOwn .messageText {
