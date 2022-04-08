@@ -1,23 +1,11 @@
-/* .main {
-  outline: 1px solid;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.users {
-  outline: 1px solid red;
-  width: 33%;
-  height: 500px;
-} */
-
 .messenger {
   height: calc(100vh - 70px);
   display: flex;
 }
 
-.chatMenu {
+.userList {
   flex: 3.5;
+  /* outline: 1px solid red; */
 }
 
 .chatMenuInput {
@@ -78,7 +66,7 @@
   flex: 3;
 }
 
-.chatMenuWrapper,
+.chatWrapper,
 .chatBoxWrapper,
 .chatOnlineWrapper {
   padding: 10px;

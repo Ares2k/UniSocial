@@ -5,6 +5,7 @@ import Button from '../../Components/Button/Button';
 import Conversation from '../../Components/Conversations/Conversation';
 import Message from '../../Components/Message/Message';
 import style from './chat.module.css';
+import { io } from 'socket.io-client';
 
 const Chat = () => {
   const [conversations, setConversations] = useState([]);
@@ -14,8 +15,26 @@ const Chat = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [arrivalMessage, setArrivalMessage] = useState(null);
   const scrollRef = useRef();
+  const socket = useRef();
   document.title = 'Chat Dashboard';
+
+  useEffect(() => {
+    arrivalMessage && currentChat?.members.includes(arrivalMessage.sender) &&
+    setMessages((prev) => [...prev, arrivalMessage])
+  }, [arrivalMessage, currentChat])
+
+  useEffect(() => {
+    socket.current = io(`ws://localhost:8900`);
+    socket.current.on("getMessage", data => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        createdAt: Date.now()
+      })
+    })
+  }, [])
 
   useEffect(() => {
     let isMounted = true;
@@ -27,7 +46,6 @@ const Chat = () => {
       localStorage.removeItem('token');
       return isMounted ? setToken(null) : null;
     }
-    
     
     if (isMounted) {
       setNavVal(null);
@@ -56,6 +74,13 @@ const Chat = () => {
     
     return () => isMounted = false;
   }, [setNavVal, token])
+
+  useEffect(() => {
+    user && socket.current.emit("addUser", user.id);
+    socket.current.on("getUsers", users => {
+      console.log(users)
+    });
+  }, [user])
 
   useEffect(() => {
     let isMounted = true;
@@ -95,6 +120,14 @@ const Chat = () => {
       conversationId: currentChat._id
     };
 
+    const receiverId = currentChat.members.find(member => member !== user.id)
+
+    socket.current.emit("sendMessage", {
+      senderId: user.id,
+      receiverId,
+      text: newMessage
+    })
+
     fetch(`http://192.168.0.75:5000/api/messages`, {
       method: 'POST',
       headers: {
@@ -122,13 +155,13 @@ const Chat = () => {
 
   return token ? (
     <div className={style.messenger}>
-      <div className={style.chatMenu}>
-        <div className={style.chatMenuWrapper}>
-
-          <input placeholder="Search for friends" className={style.chatMenuInput} />
-          {conversations.map((c) => (
-            <div onClick={() => setCurrentChat(c)}>
+      <div className={style.userList}>
+        <div className={style.chatWrapper}>
+          
+          {conversations.map((c, index) => (
+            <div key={index} onClick={() => setCurrentChat(c)}>
               <Conversation
+                key={index}
                 conversation={c}
                 currentUser={user}
                 setActive={setCurrentChat}
@@ -165,6 +198,7 @@ const Chat = () => {
                   className={style.chatSubmitButton}
                   onClick={handleSubmit}
                   label={"Send"}
+                  type={"submit"}
                 />
               </div>
             </>
