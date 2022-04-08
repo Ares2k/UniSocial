@@ -36,9 +36,13 @@
 
 .username {
   color: #b8b8b8;
+  text-align: left;
 }
 
 .profileLink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #df691ab4;
   font-weight: bold;
 }

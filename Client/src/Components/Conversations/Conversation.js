@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ProfilePicture from '../ProfilePicture/ProfilePicture';
 import style from './conversation.module.css';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 const Conversation = ({ conversation, currentUser }) => {
   const [user, setUser] = useState(null);
@@ -25,7 +26,6 @@ const Conversation = ({ conversation, currentUser }) => {
       if (res.status === 200) {
         return isMounted ? setUser(res.user) : null;
       }
-
       console.log(res);
     })
     .catch(err => {
@@ -35,7 +35,7 @@ const Conversation = ({ conversation, currentUser }) => {
     return () => isMounted = false;
       
   }, [conversation, currentUser])
-  
+
   return (
     <div className={style.conversation}>
       <div>
@@ -43,7 +43,12 @@ const Conversation = ({ conversation, currentUser }) => {
           filename={user?.filename}
           imageContainer={style.profilePic}
         />
-        <p className={style.profileLink} onClick={() => navigate(`/users/${user?.username}`)}>Profile</p>
+        <p
+          className={style.profileLink}
+          onClick={() => navigate(`/users/${user?.username}`)}
+        ><FaRegUserCircle size={"20px"} style={{marginRight: "5px"}}/>
+          Profile
+        </p>
       </div>
       
       <div className={style.conversationName}>
