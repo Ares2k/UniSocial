@@ -100,12 +100,6 @@ const login = async (req, res) => {
   res.json({ status: 401, error: 'Invalid username/password' });
 }
 
-const logout = (req, res) => { 
-  const refreshToken = req.body.token;
-  refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
-  res.json({status: 200, message: 'Successfully logged out.'});
-}
-
 const generateNewToken = (req, res) => {
   //This can go to authentication middleware
   //Same as other auth, just different secret key
@@ -324,14 +318,30 @@ const getImage = async (req, res) => {
 }
 
 const conversations = async (req, res) => {
-  const newConversation = new Conversation({
-    members: [req.body.senderId, req.body.receiverId]
-  });
-
   try {
-    const savedConversation = await newConversation.save();
+    const senderId = req.body.senderId;
+    const receiverId = req.body.receiverId;
+
+    if (!senderId || !receiverId) {
+      return res.json({ status: 400, err: "You must specify a senderId and receiverId" });
+    }
+
+    let savedConversation = await Conversation.findOne(
+      { members: { $all: [senderId, receiverId] } }
+    )
+
+    if (savedConversation) {
+      return res.json({ status: 200, savedConversation });
+    }
+    
+    const newConversation = new Conversation({
+      members: [senderId, receiverId]
+    });
+
+    savedConversation = await newConversation.save();
     res.json({ status: 200, savedConversation });
   } catch (err) {
+    console.log(err)
     res.json({ status: 500, err });
   }
 }
@@ -343,7 +353,6 @@ const getConversation = async (req, res) => {
     })
 
     if (!conversation.length > 0) return res.json({ status: 404, message: "Error conversation not found" });
-    console.log(conversation)
 
     res.json({ status: 200, conversation });
   } catch (err) {
@@ -352,10 +361,9 @@ const getConversation = async (req, res) => {
 }
 
 const sendMessage = async (req, res) => {
-  const { message } = req.body;
-  const newMessage = new Message(message);
-  
   try {
+    const { message } = req.body;
+    const newMessage = new Message(message);
     const savedMessage = await newMessage.save();
     res.json({ status: 200, savedMessage });
   } catch (err) {
@@ -377,7 +385,6 @@ const getMessage = async (req, res) => {
 module.exports = {
   register,
   login,
-  logout,
   generateNewToken,
   changePassword,
   getProfile,
