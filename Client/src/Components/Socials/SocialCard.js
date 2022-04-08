@@ -1,4 +1,4 @@
-import style from '../../Views/MutualUsers/displayUser.module.css';
+import style from './socialCard.module.css';
 import instagramImg from '../../Assets/Images/instagram.svg';
 import linkedInImg from '../../Assets/Images/linkedin.svg';
 import facebookImg from '../../Assets/Images/facebook.svg';
@@ -59,12 +59,16 @@ const SocialCard = (props) => {
       </div>
 
       {props.binIcon ?
-        props.allowInput ?
-          <ImBin
+        props.allowInput 
+        ? <ImBin
+            className={style.icon}
             style={{color: "red"}}
             size={"25px"}
             onClick={deleteSocial}
-        /> : <ImBin
+        />
+
+        : <ImBin
+          className={style.icon}
           style={{ color: "gray" }}
           size={"25px"}
         /> : ""}
