@@ -26,11 +26,8 @@ html {
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   box-shadow: rgb(180 180 180 / 80%) 0px 0px 10px 5px;
+  width: 100%;
 }
 
 .banner p {
@@ -59,10 +56,11 @@ html {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-end;
-  top: 25vh;
+  top: 26vh;
 }
 
 .imagePlacer h1 {
+  display: flex;
   font-size: 1.5rem;
 }
 
@@ -78,7 +76,11 @@ html {
 }
 
 .info {
-  margin: 80px 15px;
+  /* margin: 80px 15px; */
+  margin-top: 80px;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 35px;
 }
 
 .bio {
@@ -118,6 +120,7 @@ html {
   align-items: center;
   width: 30%;
   margin-top: 10px;
+  word-break: break-all;
 }
 
 .courseHeaders .courseInfo {
@@ -165,33 +168,8 @@ html {
   margin: 0 5px;
 }
 
-.socialCard {
-  display: flex;
-  border: 1px solid #df691a;
-  max-width: 540px;
-  width: calc(100% - 60px);
-  border-radius: 10px;
-  padding: 3px;
-  background-color: rgba(248, 248, 248, 0.767);
-  box-shadow: rgb(180 180 180 / 40%) 0px 0px 5px 1px;
-  cursor: pointer;
-}
-
 .addMore {
   justify-content: center;
-}
-
-.socialIcons {
-  height: 60px;
-  width: 60px;
-}
-
-.socialDesc {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  margin: 0px 10px;
 }
 
 /* When user clicks an item */
@@ -224,12 +202,57 @@ html {
   background-color: rgb(255, 191, 13);
 }
 
-.socialCardWrap {
-  margin: 20px auto;
+.message {
+  outline: 1px solid;
+  width: 50%;
+  float: right;
+}
+
+.button {
+  width: 30%;
+  margin-top: 50px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #df691ab4;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  transition: .3s;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: rgb(207, 129, 77);
+}
+
+.buttons {
+  margin-top: 110px;
+  outline: 1px solid blue;
+}
+
+.messageNow {
   display: flex;
   align-items: center;
-  max-width: 600px;
-  width: calc(100%-20px);
+  background-color: rgb(230, 230, 230);
+  width: 110px;
+  padding: 3px;
+  border-radius: 5px;
+}
+
+.coverPhoto {
+  position: absolute;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: white;
+  float: right;
+  border-radius: 5px;
+  padding: 5px;
+  font-weight: bold;
+  right: 10px;
+  bottom: 10px;
 }
 
 @media screen and (max-width: 500px) {

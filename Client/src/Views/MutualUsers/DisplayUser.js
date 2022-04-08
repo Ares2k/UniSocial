@@ -9,6 +9,8 @@ import SocialCard from "../../Components/Socials/SocialCard";
 import LinkHeader from "../../Components/LinkHeaders/LinkHeader";
 import EducationInfo from "../../Components/Education/EducationInfo";
 import { NavbarContext } from "../../App";
+import Button from "../../Components/Button/Button";
+import chatImg from '../../Assets/Images/chat.svg';
 
 const DisplayUser = () => {
   const [user, setUser] = useState({
@@ -30,6 +32,7 @@ const DisplayUser = () => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [selected, setSelected] = useState('links');
   const [mutual, setMutual] = useState('');
+  const [userId, setUserId] = useState();
   const { id } = useParams();
   const navigate = useNavigate();
   const { setNavVal } = useContext(NavbarContext);
@@ -48,8 +51,9 @@ const DisplayUser = () => {
     .then(res => {
       if(res.status === 200) {
         document.title = `${res.user.firstname} ${res.user.surname} @${res.user.username}`;
+        const parsedToken = JSON.parse(atob(token.split('.')[1]));
 
-        if (JSON.parse(atob(token.split('.')[1])).username === res.user.username) {
+        if (parsedToken.username === res.user.username) {
           navigate('/profile/edit')
         }
 
@@ -57,6 +61,7 @@ const DisplayUser = () => {
           setUser(res.user);
           setMutual(res.mutualHobbies);
           setNavVal(null);
+          setUserId(parsedToken.id);
         }
       } else if(res.status === 404) {
         setErrorMsg('User not found!')
@@ -76,20 +81,54 @@ const DisplayUser = () => {
     setSelected(e.currentTarget.id);
   }
 
+  const messageClick = () => {
+    fetch('http://192.168.0.75:5000/api/conversations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        senderId: userId,
+        receiverId: user._id
+      })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === 200) {
+        navigate('/chat');
+      } else {
+        console.log(res);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
   return token ? (    
     !errorMsg ? (
     <div className={style.container}>
-        <div
-          className={style.banner}
-          style={{
-            backgroundImage:
-              user.banner ? `linear-gradient(rgba(0, 0, 0, 0.5),
-              rgba(0, 0, 0, 0.5)),
-              url(/api/images/${user?.banner}) ` : `linear-gradient(rgb(255 255 255 / 50%),
-              rgba(0, 0, 0, 0.5))`
-          }}
-        >
+      <div
+        className={style.banner}
+        style={{
+          backgroundImage:
+            user.banner
+            ? (`linear-gradient(rgba(0, 0, 0, 0.5),
+                rgba(0, 0, 0, 0.5)),
+                url(/api/images/${user?.banner})`
+            ) 
+
+            : (`linear-gradient(rgb(255 255 255 / 50%),
+                rgba(0, 0, 0, 0.5))`
+            )
+        }}
+      >
+        <div className={style.coverPhoto} onClick={messageClick}>
+          <img style={{height: "25px", width: "25px", marginRight: "10px"}} src={chatImg} alt=""/>
+          Message
         </div>
+      </div>
  
       <div className={style.imagePlacer}>
         <ProfilePicture
@@ -163,22 +202,22 @@ const DisplayUser = () => {
 
         {selected === 'links' &&
           <div>
-              {user?.socials?.length > 0 ? user.socials.map(social => (
-                <a
-                  href={`//${social.link}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key={counter}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                <SocialCard
-                  key={counter++}
-                  image={social.image}
-                  title={social.title}
-                  description={social.link}
-                />
-                </a>
-              )) : <p style={{fontSize: "1.3rem"}}>No Socials Found</p>}
+            {user?.socials?.length > 0 ? user.socials.map(social => (
+              <a
+                href={`//${social.link}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={counter}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+              <SocialCard
+                key={counter++}
+                image={social.image}
+                title={social.title}
+                description={social.link}
+              />
+              </a>
+            )) : <p style={{fontSize: "1.3rem"}}>No Socials Found</p>}
           </div>
         }
 
