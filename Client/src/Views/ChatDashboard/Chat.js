@@ -16,6 +16,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [active, setActive] = useState(null);
   const scrollRef = useRef();
   const socket = useRef();
   document.title = 'Chat Dashboard';
@@ -26,7 +27,7 @@ const Chat = () => {
   }, [arrivalMessage, currentChat])
 
   useEffect(() => {
-    socket.current = io(`ws://localhost:8900`);
+    socket.current = io(`http://192.168.0.75:8900`);
     socket.current.on("getMessage", data => {
       setArrivalMessage({
         sender: data.senderId,
@@ -153,18 +154,43 @@ const Chat = () => {
     })
   }
 
+  const filterActiveConvo = (conversation) => {
+    const userId = conversation.members.filter(m => m !== user.id);
+
+    fetch(`http://192.168.0.75:5000/api/mutualUser/?id=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === 200) {
+        setActive(res.user?.filename);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
   return token ? (
     <div className={style.messenger}>
       <div className={style.userList}>
         <div className={style.chatWrapper}>
           
           {conversations.map((c, index) => (
-            <div key={index} onClick={() => setCurrentChat(c)}>
-              <Conversation
+            <div
+              key={index}
+              onClick={() => {
+                setCurrentChat(c);
+                filterActiveConvo(c);
+              }}
+            > <Conversation
                 key={index}
                 conversation={c}
                 currentUser={user}
-                setActive={setCurrentChat}
               />
             </div>
           ))}
@@ -176,11 +202,12 @@ const Chat = () => {
           {currentChat ? ( 
             <>
               <div className={style.chatBoxTop}>
-                {messages.map(m => (
-                  <div ref={scrollRef}>
+                {messages.map((m, index) => (
+                  <div ref={scrollRef} key={index}>
                     <Message 
                       message={m}
                       own={m.sender === user.id}
+                      active={active}
                     />
                   </div>
                 ))}

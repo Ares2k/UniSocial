@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: flex-start;
   margin-top: 20px;
-  /* outline: 1px solid blue; */
 }
 
 .messageTop {
@@ -37,7 +36,6 @@
   flex-direction: column;
   align-items: flex-end;
   margin-top: 20px;
-  /* outline: 1px solid blue; */
 }
 
 .messageOwn .messageText {
@@ -47,6 +45,15 @@
 
 .messageOwn .messageTop {
   justify-content: flex-end;
+}
+
+.profilePic {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid white;
 }
 
 @media screen and (max-width: 768px) {

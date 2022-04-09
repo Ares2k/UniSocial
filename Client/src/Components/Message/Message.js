@@ -1,15 +1,16 @@
 import { format } from 'timeago.js';
 import style from './message.module.css';
+import ProfilePicture from '../ProfilePicture/ProfilePicture';
 
-const Message = ({message, own}) => {
+const Message = ({ message, own, active }) => {
   return (
     <div className={own ? style.messageOwn : style.message}>
       <div className={style.messageTop}>
-        <img
-          className={style.messageImg}
-          src="https://images.pexels.com/photos/3686769/pexels-photo-3686769.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-          alt=""
-        />
+        {!own &&
+          <ProfilePicture 
+            filename={active}
+            imageContainer={style.profilePic}
+          />}
         <p className={style.messageText}>{message.text}</p>
       </div>
 

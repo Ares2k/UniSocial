@@ -1,7 +1,8 @@
 const port = process.env.REACT_APP_SOCKET_PORT || 8900;
 const io = require('socket.io')(port, {
   cors: {
-    origin: "http://localhost:3000"
+    origin: "*"
+    // origin: "http://localhost:3000"
   }
 })
 
