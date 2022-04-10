@@ -6,6 +6,7 @@ import { ImUsers } from 'react-icons/im';
 import { useContext } from 'react';
 import { NavbarContext } from '../../App';
 import { MdLogout } from 'react-icons/md';
+import networkCircleImg from '../../Assets/Images/network-circle.png';
 
 const Navbar = () => {
   const { navVal } = useContext(NavbarContext);
@@ -16,7 +17,13 @@ const Navbar = () => {
 
   return (
     <div className={navbar.navbar}>
-      <Link to="/home" className={navbar.brandTitle}>UniSocial</Link>
+      <div className={navbar.brandTitle}>
+        <Link to="/home">
+          UniS
+          <img src={networkCircleImg} style={{ width: "35px", margin: "0 1px" }} alt="" />
+          cial
+        </Link>
+      </div>
 
       <div className={navbar.icons}>
         <Link className={navbar.iconLinks} to='/mutual'>

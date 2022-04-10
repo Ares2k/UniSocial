@@ -6,6 +6,10 @@ body {
   overflow: hidden;
 }
 
+/* .logo {
+  outline: 1px solid blue;
+} */
+
 .navbar {
   position: relative;
   display: flex;
@@ -17,12 +21,23 @@ body {
   width: 100%;
 }
 
+.links a {
+  padding: 0.8rem 1.3rem;
+}
+
+.brandTitle a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* padding-top: 0.8rem; */
+}
+
 /* Styling for clickable links in navbar */
 .navbar a {
   text-decoration: none;
   color: white;
-  padding: 0.8rem 1.3rem;
-  display: block;
+  /* padding: 0.8rem 1.3rem; */
+  /* display: block; */
 }
 
 .navbar a:active {
@@ -34,9 +49,14 @@ body {
 }
 
 .brandTitle {
-  font-size: 1.5rem;
+  padding: 0.8rem 1.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
   margin: .5rem;
   font-family: 'Fira Sans', sans-serif;
+  /* outline: 1px solid blue; */
 }
 
 .icons {
