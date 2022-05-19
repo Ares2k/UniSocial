@@ -14,7 +14,7 @@ const Conversation = ({ conversation, currentUser }) => {
     const friendId = conversation.members.find(m => m !== currentUser.id);
     const token = localStorage.getItem('token');
 
-    fetch(`http://192.168.0.75:5000/api/mutualUser/?id=${friendId}`, {
+    fetch(`/api/mutualUser/?id=${friendId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

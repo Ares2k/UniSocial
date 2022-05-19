@@ -21,7 +21,7 @@ const MutualUsers = () => {
     document.title = 'Mutual Users';
     let isMounted = true;    
 
-    fetch('http://192.168.0.75:5000/api/mutual/', {
+    fetch('/api/mutual/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

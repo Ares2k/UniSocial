@@ -40,7 +40,7 @@ const DisplayUser = () => {
   
   useEffect(() => {
     let isMounted = true;
-    fetch(`http://192.168.0.75:5000/api/mutualUser/?username=${id}`, {
+    fetch(`/api/mutualUser/?username=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const DisplayUser = () => {
   }
 
   const messageClick = () => {
-    fetch('http://192.168.0.75:5000/api/conversations', {
+    fetch('/api/conversations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

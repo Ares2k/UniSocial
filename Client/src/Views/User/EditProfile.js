@@ -53,7 +53,7 @@ const EditProfile = () => {
     let isMounted = true;
     setNavVal('Sign Out');
 
-    fetch('http://192.168.0.75:5000/api/profile', {
+    fetch('/api/profile', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const EditProfile = () => {
 
     console.log(profile)
 
-    await fetch('http://192.168.0.75:5000/api/profile', {
+    await fetch('/api/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ const EditProfile = () => {
 
     formData.append("image", image);
 
-    await fetch('http://192.168.0.75:5000/api/images', {
+    await fetch('/api/images', {
       method: 'PUT',
       headers: {
         'Authorization': 'Bearer ' + token

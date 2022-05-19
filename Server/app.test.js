@@ -1,24 +1,6 @@
 const request = require('supertest');
 const app = require('./app.js');
 
-// describe("POST /api/register", () => {
-
-//   describe("Given a unique username and email and having every field filled out", () => {
-//     test("should respond with 200 status code", async () => {
-//       const response = await request(app).post("/api/register").send({
-//         "username": "timur123",
-//         "email": "aresk2k@gmail.com",
-//         "firstname": "Timur",
-//         "surname": "Sultanov",
-//         "password": "sultanov",
-//         "confirmPass": "sultanov"
-//       })
-//       expect(response.headers['content-type']).toEqual(expect.stringContaining("json"));
-//       expect(response.body.status).toBe(200);
-//     })
-//   })
-// })
-
 let token = "";
 describe("POST /api/login", () => {
   describe("Given username and password", () => {

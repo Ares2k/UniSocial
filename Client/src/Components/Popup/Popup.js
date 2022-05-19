@@ -10,7 +10,7 @@ const Popup = (props) => {
 
   useEffect(() => {
     const fetchHobbies = async () => {
-      let hobbyList = await fetch('http://192.168.0.75:5000/api/hobbies', {
+      let hobbyList = await fetch('/api/hobbies', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

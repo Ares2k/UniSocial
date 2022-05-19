@@ -24,7 +24,7 @@ const Login = () => {
     const userInput = validateLogin({username, password});
     
     if(!userInput.usernameErr && !userInput.passwordErr) {
-      let response = await fetch('http://192.168.0.74:5000/api/login', {
+      let response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

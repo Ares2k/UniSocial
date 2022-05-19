@@ -27,7 +27,7 @@ const Chat = () => {
   }, [arrivalMessage, currentChat])
 
   useEffect(() => {
-    socket.current = io(`http://192.168.0.75:8900`);
+    socket.current = io(`http://192.168.0.74:8900`);
     socket.current.on("getMessage", data => {
       setArrivalMessage({
         sender: data.senderId,
@@ -53,7 +53,7 @@ const Chat = () => {
       setUser(user);
     }
 
-    fetch(`http://192.168.0.75:5000/api/conversations/${user.id}`, {
+    fetch(`/api/conversations/${user.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const Chat = () => {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`http://192.168.0.75:5000/api/messages/${currentChat?._id}`, {
+    fetch(`/api/messages/${currentChat?._id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ const Chat = () => {
       text: newMessage
     })
 
-    fetch(`http://192.168.0.75:5000/api/messages`, {
+    fetch(`/api/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ const Chat = () => {
   const filterActiveConvo = (conversation) => {
     const userId = conversation.members.filter(m => m !== user.id);
 
-    fetch(`http://192.168.0.75:5000/api/mutualUser/?id=${userId}`, {
+    fetch(`/api/mutualUser/?id=${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -41,7 +41,7 @@ const Register = () => {
 
     if(validateInput(input)) {
       let isMounted = true;
-      let response = await fetch('http://192.168.0.75:5000/api/register', {
+      let response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
