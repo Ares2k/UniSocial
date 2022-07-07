@@ -36,3 +36,10 @@ cd Server
 npm install
 node server.js
 ```
+
+#### Socket
+```
+cd Socket
+npm install
+node index.js
+```
