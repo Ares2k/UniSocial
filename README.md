@@ -1,6 +1,9 @@
 # UniSocial
 A social platform built to help university students connect via mutual interests/hobbies and features an integrated chat.
 
+## Demo
+Live application deployed on heroku: [www.unisocial.ie](www.unisocial.ie)
+
 ## Tech/framework used
 * ReactJS
 * NodeJS
